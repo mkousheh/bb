@@ -1,0 +1,39 @@
+# Maven
+log/
+target/
+
+# Java
+*.class
+bin/
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# CVS
+.cvsignore
+
+# Eclipse
+.checkstyle
+.classpath
+.project
+.springBeans
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+
+# Mac specific
+.DS_Store
+
+# Ignore copies
+*~
+/target
+/overlays
+
+# Ignore config file
+bbws.properties
