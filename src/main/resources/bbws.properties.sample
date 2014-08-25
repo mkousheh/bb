@@ -1,0 +1,34 @@
+#Properties for Blackboard Web Services
+
+#the domain name that points to your installation of Blackboard Learn 9.1
+bbws.blackboardServerURL=
+
+#the vendor id you want to use when registering this web service
+#usually that is the short name of your organization
+bbws.clientVendorId=
+
+#the name you want to give this proxy tool
+bbws.clientProgramId=
+
+#the path to the modules folder that contains rampart.mar file
+#see the Setup Rampart Module section in the documentation file
+#that is in this project's documentation folder
+bbws.modulePath=/java/webservices/rampart-1.4
+
+#the tool registration password setup in your Blackboard's
+#system administration Building Blocks - Proxy Tools
+bbws.toolRegistrationPassword=
+
+#the shared secret value this proxy tool is expected
+#to use when logging in to Blackboard
+bbws.sharedSecret=
+
+#a brief description of the proxy tool's purpose
+bbws.toolDescription=
+
+#Blackboard username for the user you want to find the 
+#course titles that he/she is enrolled in
+bbws.username=
+
+#Blackboard course for which Rims Gradebooks are found
+bbws.courseId=
