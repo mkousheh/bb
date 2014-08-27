@@ -65,7 +65,7 @@ public class GradebookServiceImpl implements GradebookService {
     public GradebookWSStub.ColumnVO getCourseColumnByColumnName(String courseId, String columnName) throws RemoteException {
         GradebookWSStub.ColumnVO[] courseColumns = getCourseColumns(courseId);
         for (GradebookWSStub.ColumnVO courseColumn : courseColumns){
-            if (courseColumn.getColumnDisplayName().equalsIgnoreCase(columnName)){
+            if (courseColumn.getColumnDisplayName() != null && courseColumn.getColumnDisplayName().equalsIgnoreCase(columnName)){
                 return courseColumn;
             }
         }

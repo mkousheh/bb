@@ -1,6 +1,8 @@
 package edu.bu.ist.bbws.buconnector.service.coursemembership;
 
+import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+import edu.bu.ist.bbws._generated.user.UserWSStub;
 import edu.bu.ist.bbws.buconnector.service.context.ContextService;
 import edu.bu.ist.bbws.buconnector.service.course.CourseService;
 import edu.bu.ist.bbws.buconnector.service.user.UserService;
@@ -24,18 +26,58 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
     /**
      * gets a role object by role name
-      * @param role
+      * @param courseMembershipRoleId
      * @return
      * @throws RemoteException
      */
-    public CourseMembershipWSStub.CourseMembershipRoleVO getRole(String role) throws RemoteException {
+    public CourseMembershipWSStub.CourseMembershipRoleVO getCourseMembershipRoleById(String courseMembershipRoleId) throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        CourseMembershipWSStub.CourseMembershipRoleVO[] courseMembershipRoles = null;
+        CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRole = null;
+
+        try {
+            CourseMembershipWSStub.CourseRoleFilter courseMembershipRoleFilter = new CourseMembershipWSStub.CourseRoleFilter();
+            courseMembershipRoleFilter.setRoleIds(new String[]{courseMembershipRoleId});
+
+            CourseMembershipWSStub.GetCourseRoles courseRoles = new CourseMembershipWSStub.GetCourseRoles();
+            courseRoles.getF();
+
+            CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
+                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
+            getContextService().client_engage(courseMembershipWSStub._getServiceClient());
+            CourseMembershipWSStub.GetCourseRolesResponse courseRolesResponse = courseMembershipWSStub.getCourseRoles(courseRoles);
+            courseMembershipRoles = courseRolesResponse.get_return();
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+        for (CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRoleVO: courseMembershipRoles){
+            if (courseMembershipRoleVO.getRoleIdentifier().equalsIgnoreCase(courseMembershipRoleId)) {
+                courseMembershipRole = courseMembershipRoleVO;
+                break;
+            }
+        }
+
+        return courseMembershipRole;
+    }
+
+    /**
+     * gets a role object by role name
+     * @param courseMembershipRoleName
+     * @return
+     * @throws RemoteException
+     */
+    public CourseMembershipWSStub.CourseMembershipRoleVO getCourseMembershipRoleByName(String courseMembershipRoleName) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseMembershipWSStub.CourseMembershipRoleVO[] courseMembershipRoles = null;
         CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRole = null;
 
         try {
             CourseMembershipWSStub.CourseRoleFilter courseRolesFilter = new CourseMembershipWSStub.CourseRoleFilter();
-            courseRolesFilter.setRoleIds(new String[]{role});
+            courseRolesFilter.setRoleIds(new String[]{courseMembershipRoleName});
 
             CourseMembershipWSStub.GetCourseRoles courseRoles = new CourseMembershipWSStub.GetCourseRoles();
             courseRoles.setF(null);
@@ -52,10 +94,9 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         } finally {
             ctx.terminate();
         }
-        for (CourseMembershipWSStub.CourseMembershipRoleVO rol: courseMembershipRoles){
-            if (rol.getCourseRoleDescription().replace(":","").compareToIgnoreCase(role)==0) {
-                courseMembershipRole = rol;
-                logger.error(rol.getCourseRoleDescription());
+        for (CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRoleVO: courseMembershipRoles){
+            if (courseMembershipRoleVO.getCourseRoleDescription().replace(":","").equalsIgnoreCase(courseMembershipRoleName)) {
+                courseMembershipRole = courseMembershipRoleVO;
                 break;
             }
         }
@@ -64,14 +105,56 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
     /**
      * get course membership for a given username and a course id
+     * @param membershipBbId
+     * @return
+     * @throws RemoteException
+     */
+    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByBbId(String membershipBbId) throws RemoteException {
+
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        CourseMembershipWSStub.CourseMembershipVO[] bbCrsMemberships=null;
+        try {
+
+            CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
+            membershipFilter.setFilterType(1); //will load CourseMembershipVO records by Id's.
+
+            CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
+            courseMembership.setF(null);
+
+            CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
+                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
+            getContextService().client_engage(courseMembershipWSStub._getServiceClient());
+            CourseMembershipWSStub.GetCourseMembershipResponse courseMembershipResponse = courseMembershipWSStub.getCourseMembership(courseMembership);
+            bbCrsMemberships = courseMembershipResponse.get_return();
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+        return bbCrsMemberships;
+    }
+    /**
+     * get course membership for a given username and a course id
      * @param username
      * @param courseId
      * @return
      * @throws RemoteException
      */
     public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembership(String username, String courseId) throws RemoteException {
-        String userInternalId = getUserService().getUserByUsername(username).getId();
-        String courseInternalId = getCourseService().getCourseById(courseId).getId();
+
+        String courseInternalId = null;
+        CourseWSStub.CourseVO course = getCourseService().getCourseById(courseId);
+        if (course != null) {
+            courseInternalId = course.getId();
+        }
+
+        String userInternalId = null;
+        UserWSStub.UserVO user = getUserService().getUserByUsername(username);
+        if (user != null) {
+            userInternalId = user.getId();
+        }
 
         return getCourseMembershipByKey(userInternalId, courseInternalId);
     }
@@ -90,7 +173,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         try {
 
             CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
-            membershipFilter.setFilterType(5); //records by course and user Id's.
+            membershipFilter.setFilterType(6); //records by course and user Id's.
             membershipFilter.setUserIds(new String[]{userInternalId});
 
             CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
@@ -111,6 +194,8 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         }
         return bbCrsMemberships;
     }
+
+
 
     public ContextService getContextService() {
         return contextService;

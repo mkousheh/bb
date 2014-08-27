@@ -9,7 +9,11 @@ import java.rmi.RemoteException;
  */
 public interface CoursemembershipService {
 
-    public CourseMembershipWSStub.CourseMembershipRoleVO getRole(String role) throws RemoteException;
+    public CourseMembershipWSStub.CourseMembershipRoleVO getCourseMembershipRoleById(String courseMembershipRoleId) throws RemoteException;
+
+    public CourseMembershipWSStub.CourseMembershipRoleVO getCourseMembershipRoleByName(String courseMembershipRoleName) throws RemoteException;
+
+    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByBbId(String membershipBbId) throws RemoteException;
 
     public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembership(String username, String courseId) throws RemoteException;
 

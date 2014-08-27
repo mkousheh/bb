@@ -1,5 +1,10 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
+import edu.bu.ist.bbws._generated.course.CourseWSStub;
+import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
+import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
+
+import java.rmi.RemoteException;
 import java.sql.Date;
 
 /**
@@ -7,36 +12,64 @@ import java.sql.Date;
  */
 public class Column {
 
-    String aggregationModel;
-    String calculationType;
+    String bbId;
+    String courseId;
+    String columnName;
     String columnDisplayName;
-    String ColumnName;
-    //ContentId
-    Course Course;
-    Date dateCreated;
-    Date dateModified;
     String description;
     String descriptionType;
+   int multipleAttempts;
+    Date dateCreated;
+    Date dateModified;
+    String calculationType;
+    String aggregationModel;
+    //ContentId
     Date dueDate;
-    String bbId;
-    boolean isMultipleAttempts;
-    int possible;
-    int weight;
+    Double possible;
+    float weight;
 
-    public String getAggregationModel() {
-        return aggregationModel;
+    public Column() {
     }
 
-    public void setAggregationModel(String aggregationModel) {
-        this.aggregationModel = aggregationModel;
+    public Column(GradebookWSStub.ColumnVO columnVO) {
+        this.bbId = columnVO.getId();
+        this.courseId = columnVO.getCourseId();
+        this.columnName = columnVO.getColumnName();
+        this.columnDisplayName = columnVO.getColumnDisplayName();
+        this.description = columnVO.getDescription();
+        this.descriptionType = columnVO.getDescriptionType();
+        this.multipleAttempts = columnVO.getMultipleAttempts();
+//        this.dateCreated = columnVO.getDateCreated();
+//        this.dateModified = columnVO.getDateModified();
+        this.calculationType = columnVO.getCalculationType();
+//        this.dueDate = columnVO.getDueDate();
+        this.possible = columnVO.getPossible();
+        this.weight = columnVO.getWeight();
     }
 
-    public String getCalculationType() {
-        return calculationType;
+
+    public String getBbId() {
+        return bbId;
     }
 
-    public void setCalculationType(String calculationType) {
-        this.calculationType = calculationType;
+    public void setBbId(String bbId) {
+        this.bbId = bbId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 
     public String getColumnDisplayName() {
@@ -45,38 +78,6 @@ public class Column {
 
     public void setColumnDisplayName(String columnDisplayName) {
         this.columnDisplayName = columnDisplayName;
-    }
-
-    public String getColumnName() {
-        return ColumnName;
-    }
-
-    public void setColumnName(String columnName) {
-        ColumnName = columnName;
-    }
-
-    public Course getCourse() {
-        return Course;
-    }
-
-    public void setCourse(Course course) {
-        Course = course;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Date getDateModified() {
-        return dateModified;
-    }
-
-    public void setDateModified(Date dateModified) {
-        this.dateModified = dateModified;
     }
 
     public String getDescription() {
@@ -95,6 +96,46 @@ public class Column {
         this.descriptionType = descriptionType;
     }
 
+    public int getMultipleAttempts() {
+        return multipleAttempts;
+    }
+
+    public void setMultipleAttempts(int multipleAttempts) {
+        this.multipleAttempts = multipleAttempts;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
+
+    public String getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
+    }
+
+    public String getAggregationModel() {
+        return aggregationModel;
+    }
+
+    public void setAggregationModel(String aggregationModel) {
+        this.aggregationModel = aggregationModel;
+    }
+
     public Date getDueDate() {
         return dueDate;
     }
@@ -103,35 +144,39 @@ public class Column {
         this.dueDate = dueDate;
     }
 
-    public String getBbId() {
-        return bbId;
-    }
-
-    public void setBbId(String bbId) {
-        this.bbId = bbId;
-    }
-
-    public boolean isMultipleAttempts() {
-        return isMultipleAttempts;
-    }
-
-    public void setMultipleAttempts(boolean isMultipleAttempts) {
-        this.isMultipleAttempts = isMultipleAttempts;
-    }
-
-    public int getPossible() {
+    public Double getPossible() {
         return possible;
     }
 
-    public void setPossible(int possible) {
+    public void setPossible(Double possible) {
         this.possible = possible;
     }
 
-    public int getWeight() {
+    public float getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(float weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public String toString() {
+        return "Column{" +
+                "bbId='" + bbId + '\'' +
+                ", courseId='" + courseId + '\'' +
+                ", columnName='" + columnName + '\'' +
+                ", columnDisplayName='" + columnDisplayName + '\'' +
+                ", description='" + description + '\'' +
+                ", descriptionType='" + descriptionType + '\'' +
+                ", multipleAttempts=" + multipleAttempts +
+                ", dateCreated=" + dateCreated +
+                ", dateModified=" + dateModified +
+                ", calculationType='" + calculationType + '\'' +
+                ", aggregationModel='" + aggregationModel + '\'' +
+                ", dueDate=" + dueDate +
+                ", possible=" + possible +
+                ", weight=" + weight +
+                '}';
     }
 }

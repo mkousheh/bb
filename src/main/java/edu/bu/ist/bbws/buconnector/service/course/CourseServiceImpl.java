@@ -3,6 +3,7 @@ package edu.bu.ist.bbws.buconnector.service.course;
 import edu.bu.ist.bbws._generated.context.ContextWSStub;
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+import edu.bu.ist.bbws._generated.user.UserWSStub;
 import edu.bu.ist.bbws.buconnector.service.context.ContextService;
 import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
 import edu.bu.ist.bbws.buconnector.service.gradebook.GradebookService;
@@ -66,6 +67,40 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * retrieve course object for a given course id
+     * @param courseBbId
+     * @return
+     * @throws RemoteException
+     */
+    public CourseWSStub.CourseVO getCourseByBbId( String courseBbId) throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        CourseWSStub.CourseVO[] courseVOs;
+        CourseWSStub.CourseVO courseVO= null;
+        try {
+            CourseWSStub.GetCourse getCourse = new CourseWSStub.GetCourse();
+            CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
+            courseFilter.setFilterType(3); // BY Blackboard Internal ID
+            courseFilter.setIds(new String[]{courseBbId});
+            getCourse.setFilter(courseFilter);
+
+            CourseWSStub courseWSStub = new CourseWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+            getContextService().client_engage(courseWSStub._getServiceClient());
+            CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(getCourse);
+            courseVOs = getCourseResponse.get_return();
+            if (courseVOs != null) {
+                courseVO = courseVOs[0];
+            }
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+        return courseVO;
+    }
+
+    /**
+     * retrieve course object for a given course id
      * @param courseId
      * @return
      * @throws RemoteException
@@ -102,7 +137,6 @@ public class CourseServiceImpl implements CourseService {
             ctx.terminate();
         }
         return courseVO;
-
     }
 
     /**
@@ -112,11 +146,10 @@ public class CourseServiceImpl implements CourseService {
      * @throws RemoteException
      */
     @Override
-    public CourseWSStub.CourseVO[] getBlackboardCoursesForUser(String username)
+    public CourseWSStub.CourseVO[] getCoursesForUser(String username)
             throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseWSStub.CourseVO[] courseVOs = null;
-
         try {
 
             ContextWSStub.CourseIdVO[] courseIdVOs = getContextService().getMembershipFromContext (username);
@@ -134,19 +167,18 @@ public class CourseServiceImpl implements CourseService {
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
             courseFilter.setFilterType(3); //3 - Load by ids and (course|org) flag
 
+            String[] courseIdsAsArr = courseIds.toArray(new String[courseIds.size()]);
 
-            String[] courseIdsAsArr = new String[courseIds.size()];
-            courseIdsAsArr = (String[])courseIds.toArray(courseIdsAsArr);
+            if (courseIdsAsArr.length > 0) {
+                courseFilter.setIds(courseIdsAsArr);
+                courses.setFilter(courseFilter);
+                CourseWSStub courseWSStub = new CourseWSStub(ctx,
+                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+                getContextService().client_engage(courseWSStub._getServiceClient());
 
-            courseFilter.setIds(courseIdsAsArr);
-            courses.setFilter(courseFilter);
-            CourseWSStub courseWSStub = new CourseWSStub(ctx,
-                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
-            getContextService().client_engage(courseWSStub._getServiceClient());
-
-            CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
-            courseVOs = getCourseResponse.get_return();
-
+                CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
+                courseVOs = getCourseResponse.get_return();
+            }
         } catch (RemoteException e) {
             logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
             e.printStackTrace();
@@ -161,56 +193,66 @@ public class CourseServiceImpl implements CourseService {
     /**
      * gets all courses for given username and rolename
       * @param username
-     * @param role
+     * @param courseMembershipRoleName
      * @return
      * @throws RemoteException
      */
     @Override
-    public CourseWSStub.CourseVO[] getBlackboardCoursesForUserByRole(String username, String role)
+    public CourseWSStub.CourseVO[] getCoursesForUserInRole(String username, String courseMembershipRoleName)
             throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseWSStub.CourseVO[] courseVOs = null;
         try{
-
             // get user's membership
             ContextWSStub.CourseIdVO[] courseIdVOs = getContextService().getMembershipFromContext (username);
 
-            String[] courseIds = new String[courseIdVOs.length];
-            int i = 0;
-            for (ContextWSStub.CourseIdVO courseIdVO : courseIdVOs) {
-                courseIds[i] = courseIdVO.getExternalId();
-                i++;
-            }
-
-            String roleInternalId = getCoursemembershipService().getRole(role).getRoleIdentifier();
-            String userInternalId = getUserService().getUserByUsername(username).getId();
-
-            logger.info("before");
-            ArrayList<String> filteredCourseIds = new ArrayList<String>();
-            for (String courseId : courseIds){
-                CourseMembershipWSStub.CourseMembershipVO[] courseMemberships = getCoursemembershipService().getCourseMembershipByKey (userInternalId, courseId);
-                for (CourseMembershipWSStub.CourseMembershipVO courseMembership : courseMemberships){
-                    if (courseMembership.getRoleId().equals(roleInternalId)){
-                        filteredCourseIds.add(courseId);
+            ArrayList<String> courseIds = new ArrayList<String>();
+            if (courseIdVOs != null) {
+                for (ContextWSStub.CourseIdVO courseIdVO : courseIdVOs) {
+                    if (courseIdVO != null) {
+                        courseIds.add(courseIdVO.getExternalId());
                     }
                 }
             }
 
-            String[] fCourseIds = filteredCourseIds.toArray(new String[filteredCourseIds.size()]);
+            String roleInternalId = null;
+            CourseMembershipWSStub.CourseMembershipRoleVO role = getCoursemembershipService().getCourseMembershipRoleByName(courseMembershipRoleName);
+            if (role != null) {
+                roleInternalId = role.getRoleIdentifier();
+            }
 
-            // get courses objects fot the list of courses found in user's membership
-            CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
-            CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-            courseFilter.setFilterType(3); //3 - Load by ids and (course|org) flag
-            courseFilter.setIds(fCourseIds);
-            courses.setFilter(courseFilter);
-            CourseWSStub courseWSStub = new CourseWSStub(ctx,
-                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
-            getContextService().client_engage(courseWSStub._getServiceClient());
+            String userInternalId = null;
+            UserWSStub.UserVO user = getUserService().getUserByUsername(username);
+            if (user != null) {
+                userInternalId = user.getId();
+            }
 
-            CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
-            courseVOs = getCourseResponse.get_return();
+            if (userInternalId != null & roleInternalId != null) {
+                ArrayList<String> filteredCourseIds = new ArrayList<String>();
+                for (String courseId : courseIds) {
+                    CourseMembershipWSStub.CourseMembershipVO[] courseMemberships = getCoursemembershipService().getCourseMembershipByKey(userInternalId, courseId);
+                    for (CourseMembershipWSStub.CourseMembershipVO courseMembership : courseMemberships) {
+                        if (courseMembership.getRoleId().equals(roleInternalId)) {
+                            filteredCourseIds.add(courseId);
+                        }
+                    }
+                }
 
+                String[] fCourseIds = filteredCourseIds.toArray(new String[filteredCourseIds.size()]);
+
+                // get courses objects fot the list of courses found in user's membership
+                CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
+                CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
+                courseFilter.setFilterType(3); //3 - Load by ids and (course|org) flag
+                courseFilter.setIds(fCourseIds);
+                courses.setFilter(courseFilter);
+                CourseWSStub courseWSStub = new CourseWSStub(ctx,
+                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+                getContextService().client_engage(courseWSStub._getServiceClient());
+
+                CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
+                courseVOs = getCourseResponse.get_return();
+            }
         } catch (RemoteException e) {
             logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
             e.printStackTrace();
@@ -218,7 +260,6 @@ public class CourseServiceImpl implements CourseService {
         } finally {
             ctx.terminate();
         }
-        logger.info("after");
         return courseVOs;
     }
 

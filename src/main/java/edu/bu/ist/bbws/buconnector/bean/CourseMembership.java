@@ -1,22 +1,45 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
+import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+
+
 /**
  * Created by mkousheh on 8/25/14.
  */
-public class CourseMembership {
-    boolean isAvailable;
+public  class CourseMembership {
+    String bbId;
+    User user;
     Course course;
     Long enrollmentDate;
-    String bbId;
-    CourseRole role;
-    User user;
+    CourseMembershipRole courseMembershipRole;
+    boolean available;
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public CourseMembership() {
     }
 
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public CourseMembership(CourseMembershipWSStub.CourseMembershipVO courseMembershipVO) {
+        this.bbId = courseMembershipVO.getId();
+        this.user = new User(courseMembershipVO.getUserId());
+        this.course = new Course(courseMembershipVO.getCourseId());
+        this.enrollmentDate = courseMembershipVO.getEnrollmentDate();
+        this.courseMembershipRole = new CourseMembershipRole(courseMembershipVO.getRoleId());
+        this.available = courseMembershipVO.getAvailable();
+    }
+
+    public String getBbId() {
+        return bbId;
+    }
+
+    public void setBbId(String bbId) {
+        this.bbId = bbId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Course getCourse() {
@@ -35,27 +58,31 @@ public class CourseMembership {
         this.enrollmentDate = enrollmentDate;
     }
 
-    public String getBbId() {
-        return bbId;
+    public CourseMembershipRole getCourseMembershipRole() {
+        return courseMembershipRole;
     }
 
-    public void setBbId(String bbId) {
-        this.bbId = bbId;
+    public void setCourseMembershipRole(CourseMembershipRole courseMembershipRole) {
+        this.courseMembershipRole = courseMembershipRole;
     }
 
-    public CourseRole getRole() {
-        return role;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setRole(CourseRole role) {
-        this.role = role;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    @Override
+    public String toString() {
+        return "CourseMembership{" +
+                "bbId='" + bbId + '\'' +
+                ", user=" + user.toString() +
+                ", course=" + course.toString() +
+                ", enrollmentDate=" + enrollmentDate +
+                ", courseMembershipRole=" + courseMembershipRole.toString() +
+                ", available=" + available +
+                '}';
     }
 }

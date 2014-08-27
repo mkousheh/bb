@@ -23,18 +23,52 @@ public class UserServiceImpl implements UserService {
 
     /**
      * gets user object by user name
-      * @param userId
+     * @param userBbId
      * @return
      * @throws RemoteException
      */
-    public UserWSStub.UserVO getUserByUsername(String userId) throws RemoteException {
+    public UserWSStub.UserVO getUserByUserBbId(String userBbId) throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        UserWSStub.UserVO user=null;
+        try {
+            UserWSStub.UserFilter userFilter = new UserWSStub.UserFilter();
+            userFilter.setFilterType(2);  // By BB Internal ID
+            userFilter.setAvailable(Boolean.TRUE);
+            userFilter.setId(new String[]{userBbId});
+            UserWSStub.GetUser getUser = new UserWSStub.GetUser();
+            getUser.setFilter(userFilter);
+            UserWSStub userWSStub = new UserWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/User.WS");
+            getContextService().client_engage(userWSStub._getServiceClient());
+            UserWSStub.GetUserResponse userResponse = userWSStub.getUser(getUser);
+            UserWSStub.UserVO[] userVOs = userResponse.get_return();
+            if (userVOs != null) {
+                user = userVOs[0];
+            }
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+        return user;
+    }
+
+
+    /**
+     * gets user object by user name
+     * @param username
+     * @return
+     * @throws RemoteException
+     */
+    public UserWSStub.UserVO getUserByUsername(String username) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         UserWSStub.UserVO user=null;
         try {
             UserWSStub.UserFilter userFilter = new UserWSStub.UserFilter();
             userFilter.setFilterType(3);  // GET_USER_BY_BATCH_ID_WITH_AVAILABILITY
             userFilter.setAvailable(Boolean.TRUE);
-            userFilter.setBatchId(new String[]{userId});
+            userFilter.setBatchId(new String[]{username});
             UserWSStub.GetUser getUser = new UserWSStub.GetUser();
             getUser.setFilter(userFilter);
             UserWSStub userWSStub = new UserWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/User.WS");

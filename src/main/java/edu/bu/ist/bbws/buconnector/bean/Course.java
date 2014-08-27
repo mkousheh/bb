@@ -1,6 +1,10 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
+import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
+import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
+
+import java.rmi.RemoteException;
 
 /**
  * Created by mkousheh on 8/25/14.
@@ -19,6 +23,7 @@ public class Course {
     String bbLocalId;
     String startDate;
     String endDate;
+    Column columns;
 
     public Course() {
     }
@@ -39,6 +44,31 @@ public class Course {
 //                this.endDate = courseV0.getEndDate();
 
     }
+
+    public Course(String courseBbId) {
+        CourseWSStub.CourseVO courseV0;
+        try {
+            courseV0 = new CourseServiceImpl().getCourseByBbId(courseBbId);
+                if (courseV0 != null) {
+                    this.courseId = courseV0.getCourseId();
+                    this.available = courseV0.getAvailable();
+                    this.batchUid = courseV0.getBatchUid();
+                    this.bbLocalId = courseV0.getId();
+                    this.courseServiceLevel = courseV0.getCourseServiceLevel();
+                    this.courseId = courseV0.getCourseId();
+                    this.description = courseV0.getDescription();
+                    this.duration = courseV0.getCourseDuration();
+                    this.enrollmentType = courseV0.getEnrollmentType();
+                    this.institutionName = courseV0.getInstitutionName();
+                    this.name = courseV0.getName();
+//                this.startDate = courseV0.getStartDate();
+//                this.endDate = courseV0.getEndDate();
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+    }
+
 
     public boolean isAvailable() {
         return available;

@@ -1,7 +1,15 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
 import edu.bu.ist.bbws._generated.user.UserWSStub;
+import edu.bu.ist.bbws.buconnector.service.context.ContextService;
+import edu.bu.ist.bbws.buconnector.service.course.CourseService;
+import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
+import edu.bu.ist.bbws.buconnector.service.gradebook.GradebookService;
+import edu.bu.ist.bbws.buconnector.service.user.UserService;
+import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
+import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,57 +18,88 @@ import java.util.List;
  */
 public class User {
 
-    String userName;
-    String studentId;
-    String bbLocalId;
-    String emailAddress;
-    String familyName;
-    String givenName;
-    String genderType;
-    String educationLevel;
-    String title;
-    boolean isAvailable;
-    List<String> insRoles;
-    List<String> systemRoles;
+    private String userName;
+    private String studentId;
+    private String bbLocalId;
+    private String emailAddress;
+    private String familyName;
+    private String givenName;
+    private String genderType;
+    private String educationLevel;
+    private String title;
+    private boolean available;
+    private List<String> insRoles;
+    private List<String> systemRoles;
+
 
     public User() {
     }
 
-        public User(UserWSStub.UserVO userVO) {
-        this.setAvailable(userVO.getIsAvailable());
-        this.setBbLocalId(userVO.getId());
-        this.setEducationLevel(userVO.getEducationLevel());
-
-        if (userVO.getExtendedInfo().getEmailAddress() != null) {
-            this.setEmailAddress(userVO.getExtendedInfo().getEmailAddress());
-        }
-
-        if (userVO.getExtendedInfo().getFamilyName() != null) {
-            this.setFamilyName(userVO.getExtendedInfo().getFamilyName());
-        }
-        if (userVO.getExtendedInfo().getGivenName() != null) {
-            this.setGivenName(userVO.getExtendedInfo().getGivenName());
-        }
-        this.setGenderType(userVO.getGenderType());
-        this.setStudentId(userVO.getStudentId());
-        this.setTitle(userVO.getTitle());
-        this.setUserName(userVO.getName());
-
-        if (userVO.getInsRoles() != null) {
-            List<String> instRoles = new ArrayList<String>();
-            for (String insRole : userVO.getInsRoles()) {
-                instRoles.add(insRole);
+    public User(String userBbId) {
+        UserWSStub.UserVO userVO;
+        try {
+            userVO = new UserServiceImpl().getUserByUserBbId(userBbId);
+            if (userVO != null){
+                this.available = userVO.getIsAvailable();
+                this.bbLocalId = userVO.getId();
+                this.educationLevel = userVO.getEducationLevel();
+                this.emailAddress = userVO.getExtendedInfo().getEmailAddress();
+                this.familyName = userVO.getExtendedInfo().getFamilyName();
+                this.givenName = userVO.getExtendedInfo().getGivenName();
+                this.genderType = userVO.getGenderType();
+                this.studentId = userVO.getStudentId();
+                this.title = userVO.getTitle();
+                this.userName = userVO.getName();
+                if (userVO.getInsRoles() != null) {
+                    List<String> instRoles = new ArrayList<String>();
+                    for (String insRole : userVO.getInsRoles()) {
+                        instRoles.add(insRole);
+                    }
+                    this.insRoles = instRoles;
+                }
+                if (userVO.getSystemRoles() != null) {
+                    List<String> systemRoles = new ArrayList<String>();
+                    for (String systemRole : userVO.getSystemRoles()) {
+                        systemRoles.add(systemRole);
+                    }
+                    this.systemRoles = systemRoles;
+                }
             }
-            this.setInsRoles(instRoles);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
+    }
 
-        if (userVO.getSystemRoles() != null) {
-            List<String> systemRoles = new ArrayList<String>();
-            for (String systemRole : userVO.getSystemRoles()) {
-                systemRoles.add(systemRole);
+    public User(UserWSStub.UserVO userVO) {
+        if (userVO != null) {
+            this.available = userVO.getIsAvailable();
+            this.bbLocalId = userVO.getId();
+            this.educationLevel = userVO.getEducationLevel();
+            this.emailAddress = userVO.getExtendedInfo().getEmailAddress();
+            this.familyName = userVO.getExtendedInfo().getFamilyName();
+            this.givenName = userVO.getExtendedInfo().getGivenName();
+            this.genderType = userVO.getGenderType();
+            this.studentId = userVO.getStudentId();
+            this.title = userVO.getTitle();
+            this.userName = userVO.getName();
+
+            if (userVO.getInsRoles() != null) {
+                List<String> instRoles = new ArrayList<String>();
+                for (String insRole : userVO.getInsRoles()) {
+                    instRoles.add(insRole);
+                }
+                this.insRoles = instRoles;
             }
-            this.setSystemRoles(systemRoles);
-        }   }
+
+            if (userVO.getSystemRoles() != null) {
+                List<String> systemRoles = new ArrayList<String>();
+                for (String systemRole : userVO.getSystemRoles()) {
+                    systemRoles.add(systemRole);
+                }
+                this.systemRoles = systemRoles;
+            }
+        }
+    }
 
 
     public String getUserName() {
@@ -136,11 +175,11 @@ public class User {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public List<String> getInsRoles() {
@@ -171,9 +210,10 @@ public class User {
                 ", genderType='" + genderType + '\'' +
                 ", educationLevel='" + educationLevel + '\'' +
                 ", title='" + title + '\'' +
-                ", isAvailable=" + isAvailable +
+                ", available=" + available +
                 ", insRoles=" + insRoles +
                 ", systemRoles=" + systemRoles +
                 '}';
     }
+
 }

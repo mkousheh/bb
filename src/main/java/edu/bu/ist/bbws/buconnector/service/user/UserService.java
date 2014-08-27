@@ -11,6 +11,8 @@ public interface UserService {
 
     public UserWSStub.UserVO[] getCourseUsersByCourseId(String courseId) throws RemoteException;
 
+    public UserWSStub.UserVO getUserByUserBbId(String userBbId) throws RemoteException;
+
     public UserWSStub.UserVO getUserByUsername(String username) throws RemoteException;
 
 }

@@ -5,28 +5,32 @@ package edu.bu.ist.bbws.buconnector.bean;
  */
 public class Score {
 
-    String verageScore;
+    String bbId;
     Column column;
     Course course;
     String firstAttemptId;
     String grade;
+    String lowestAttemptId;
     String highestAttemptId;
-    String bbId;
     String lastAttemptId;
-    //localMemberId = {java.lang.String@3219}"_784185_1"
-    //localSchemaGradeValue = {java.lang.String@3220}"460.00"
     int status;
+    //Member memberId = {java.lang.String@3219}"_784185_1"
+    //Schema SchemaGradeValue = {java.lang.String@3220}"460.00"
     String shortInstructorComments;
     String shortStudentComments;
     String instructorComments;
     String studentComments;
+    String averageScore;
 
-    public String getVerageScore() {
-        return verageScore;
+    public Score() {
     }
 
-    public void setVerageScore(String verageScore) {
-        this.verageScore = verageScore;
+    public String getBbId() {
+        return bbId;
+    }
+
+    public void setBbId(String bbId) {
+        this.bbId = bbId;
     }
 
     public Column getColumn() {
@@ -61,20 +65,20 @@ public class Score {
         this.grade = grade;
     }
 
+    public String getLowestAttemptId() {
+        return lowestAttemptId;
+    }
+
+    public void setLowestAttemptId(String lowestAttemptId) {
+        this.lowestAttemptId = lowestAttemptId;
+    }
+
     public String getHighestAttemptId() {
         return highestAttemptId;
     }
 
     public void setHighestAttemptId(String highestAttemptId) {
         this.highestAttemptId = highestAttemptId;
-    }
-
-    public String getBbId() {
-        return bbId;
-    }
-
-    public void setBbId(String bbId) {
-        this.bbId = bbId;
     }
 
     public String getLastAttemptId() {
@@ -123,5 +127,33 @@ public class Score {
 
     public void setStudentComments(String studentComments) {
         this.studentComments = studentComments;
+    }
+
+    public String getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(String averageScore) {
+        this.averageScore = averageScore;
+    }
+
+    @Override
+    public String toString() {
+        return "Score{" +
+                "bbId='" + bbId + '\'' +
+                ", column=" + column +
+                ", course=" + course +
+                ", firstAttemptId='" + firstAttemptId + '\'' +
+                ", grade='" + grade + '\'' +
+                ", lowestAttemptId='" + lowestAttemptId + '\'' +
+                ", highestAttemptId='" + highestAttemptId + '\'' +
+                ", lastAttemptId='" + lastAttemptId + '\'' +
+                ", status=" + status +
+                ", shortInstructorComments='" + shortInstructorComments + '\'' +
+                ", shortStudentComments='" + shortStudentComments + '\'' +
+                ", instructorComments='" + instructorComments + '\'' +
+                ", studentComments='" + studentComments + '\'' +
+                ", averageScore='" + averageScore + '\'' +
+                '}';
     }
 }
