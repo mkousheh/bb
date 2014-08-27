@@ -1,6 +1,5 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
-import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
 
 /**
@@ -8,23 +7,23 @@ import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
  */
 public class Score {
 
-    String bbId;
-    Column column;
-    Course course;
-    String grade;
-    String firstAttemptId;
-    String lastAttemptId;
-    String lowestAttemptId;
-    String highestAttemptId;
-    int status;
+    private String bbId;
+    private Column column;
+    private Course course;
+    private String grade;
+    private String firstAttemptId;
+    private String lastAttemptId;
+    private String lowestAttemptId;
+    private String highestAttemptId;
+    private int status;
  //   CourseMembership membership;
     //Member memberId = {java.lang.String@3219}"_784185_1"
     //Schema SchemaGradeValue = {java.lang.String@3220}"460.00"
-    String shortInstructorComments;
-    String shortStudentComments;
-    String instructorComments;
-    String studentComments;
-    double averageScore;
+    private String shortInstructorComments;
+    private String shortStudentComments;
+    private String instructorComments;
+    private String studentComments;
+    private double averageScore;
 
     public Score() {
     }

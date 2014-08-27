@@ -1,23 +1,19 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
-import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
 import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipServiceImpl;
-import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by mkousheh on 8/26/14.
  */
 public class CourseMembershipRole {
 
-    String bbRoleId;
-    String courseRoleDescription;
-    String orgRoleDescription;
-    boolean defaultRole;
+    private String bbRoleId;
+    private String courseRoleDescription;
+    private String orgRoleDescription;
+    private boolean defaultRole;
 
     public CourseMembershipRole() {
     }

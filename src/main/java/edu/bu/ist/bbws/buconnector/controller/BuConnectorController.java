@@ -10,7 +10,6 @@ import edu.bu.ist.bbws.buconnector.service.course.CourseService;
 import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
 import edu.bu.ist.bbws.buconnector.service.gradebook.GradebookService;
 import edu.bu.ist.bbws.buconnector.service.user.UserService;
-import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.log4j.Logger;
@@ -18,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +40,7 @@ public class BuConnectorController {
     private ConnectorUtil connectorUtil;
 
 
-    public BuConnectorController() {
+    private BuConnectorController() {
     }
 
 
@@ -378,7 +378,7 @@ public class BuConnectorController {
 
     }
 
-    public ContextService getContextService() {
+    ContextService getContextService() {
         return contextService;
     }
 
@@ -386,7 +386,7 @@ public class BuConnectorController {
         this.contextService = contextService;
     }
 
-    public CourseService getCourseService() {
+    CourseService getCourseService() {
         return courseService;
     }
 
@@ -394,7 +394,7 @@ public class BuConnectorController {
         this.courseService = courseService;
     }
 
-    public CoursemembershipService getCoursemembershipService() {
+    CoursemembershipService getCoursemembershipService() {
         return coursemembershipService;
     }
 
@@ -402,7 +402,7 @@ public class BuConnectorController {
         this.coursemembershipService = coursemembershipService;
     }
 
-    public GradebookService getGradebookService() {
+    GradebookService getGradebookService() {
         return gradebookService;
     }
 
@@ -410,7 +410,7 @@ public class BuConnectorController {
         this.gradebookService = gradebookService;
     }
 
-    public UserService getUserService() {
+    UserService getUserService() {
         return userService;
     }
 
@@ -422,7 +422,7 @@ public class BuConnectorController {
 
 
 
-    public User loadUserByKey(String userBbId) {
+    User loadUserByKey(String userBbId) {
         User user = new User();
         UserWSStub.UserVO userVO;
         try {
@@ -440,16 +440,12 @@ public class BuConnectorController {
                 user.setUserName(userVO.getName());
                 if (userVO.getInsRoles() != null) {
                     List<String> instRoles = new ArrayList<String>();
-                    for (String insRole : userVO.getInsRoles()) {
-                        instRoles.add(insRole);
-                    }
+                    Collections.addAll(instRoles, userVO.getInsRoles());
                     user.setInsRoles(instRoles);
                 }
                 if (userVO.getSystemRoles() != null) {
                     List<String> systemRoles = new ArrayList<String>();
-                    for (String systemRole : userVO.getSystemRoles()) {
-                        systemRoles.add(systemRole);
-                    }
+                    Collections.addAll(systemRoles, userVO.getSystemRoles());
                     user.setSystemRoles(systemRoles);
                 }
             }
@@ -459,7 +455,7 @@ public class BuConnectorController {
     return user;
     }
 
-public Course loadCourseByKey(String courseBbId){
+Course loadCourseByKey(String courseBbId){
     Course course = new Course();
     CourseWSStub.CourseVO courseVO;
     try {
@@ -484,7 +480,7 @@ public Course loadCourseByKey(String courseBbId){
 
 
 
-    public CourseMembershipRole loadCourseMembershipRoleByKey(String courseMembershipRoleId){
+    CourseMembershipRole loadCourseMembershipRoleByKey(String courseMembershipRoleId){
         CourseMembershipRole courseMembershipRole = new CourseMembershipRole();
         CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRoleVO;
         try {

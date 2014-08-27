@@ -9,7 +9,7 @@ import org.apache.axis2.wsdl.WSDL2Code;
  * @author bphillips
  *
  */
-public class AxisCodeGenerator {
+class AxisCodeGenerator {
 	public static void main(String[] args) throws Exception {
 		
 		/*

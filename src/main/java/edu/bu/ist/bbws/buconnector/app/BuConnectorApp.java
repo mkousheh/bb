@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * Created by mkousheh on 8/20/14.
  */
-public class BuConnectorApp {
+class BuConnectorApp {
     private static final Logger logger = Logger.getLogger(BuConnectorApp.class.getName());
 
-    ApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext_BuConnector.xml");
-    BuConnectorController buConnectorController;
+    private ApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext_BuConnector.xml");
+    private BuConnectorController buConnectorController;
 
     public BuConnectorApp() {
         buConnectorController = (BuConnectorController) ctx.getBean("buConnectorController");
@@ -48,7 +48,7 @@ public class BuConnectorApp {
 
 
         List<Course> allCourses = buConnectorController.getBlackboardCourses();
-        logger.info("courses for user (" + username +")");
+        logger.info("All BB courses: ");
         for (Course course : allCourses){
             logger.info(course.toString());
         }

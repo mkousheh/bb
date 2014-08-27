@@ -2,7 +2,6 @@ package edu.bu.ist.bbws.buconnector.bean;
 
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
-import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -12,19 +11,19 @@ import java.sql.Date;
  */
 public class Course {
 
-    String bbId;
-    String courseId;
-    String batchUid;
-    String name;
-    String description;
-    String enrollmentType;
-    Date startDate;
-    Date endDate;
-    String duration;
-    boolean available;
-    String institutionName;
-    String courseServiceLevel;
-    Column columns;
+    private String bbId;
+    private String courseId;
+    private String batchUid;
+    private String name;
+    private String description;
+    private String enrollmentType;
+    private Date startDate;
+    private Date endDate;
+    private String duration;
+    private boolean available;
+    private String institutionName;
+    private String courseServiceLevel;
+    private Column columns;
 
     public Course() {
     }

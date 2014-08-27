@@ -1,10 +1,7 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
-import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
-import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 
 /**
@@ -12,20 +9,20 @@ import java.sql.Date;
  */
 public class Column {
 
-    String bbId;
-    String courseId;
-    String columnName;
-    String columnDisplayName;
-    String description;
-    String descriptionType;
-    int multipleAttempts;
-    Date dateCreated;
-    Date dateModified;
-    String calculationType;
-    String aggregationModel;
-    Date dueDate;
-    Double possible;
-    float weight;
+    private String bbId;
+    private String courseId;
+    private String columnName;
+    private String columnDisplayName;
+    private String description;
+    private String descriptionType;
+    private int multipleAttempts;
+    private Date dateCreated;
+    private Date dateModified;
+    private String calculationType;
+    private String aggregationModel;
+    private Date dueDate;
+    private Double possible;
+    private float weight;
 
     public Column() {
     }

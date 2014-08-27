@@ -27,7 +27,7 @@ import java.rmi.RemoteException;
 public class ContextServiceImpl implements ContextService {
     private static final Logger logger = Logger.getLogger(ContextServiceImpl.class.getName());
 
-    public ContextWSStub contextWSStub;
+    private ContextWSStub contextWSStub;
     private PasswordCallbackClass pwcb;
     private HttpClient httpClient;
     private ConfigurationContext ctx = null;
@@ -87,8 +87,7 @@ public class ContextServiceImpl implements ContextService {
         memberships.setUserid(username);
         ContextWSStub.GetMembershipsResponse getMembershipsResponse = contextWSStub.getMemberships(memberships);
 
-        ContextWSStub.CourseIdVO[] courseIdVOs = getMembershipsResponse.get_return();
-        return courseIdVOs;
+        return getMembershipsResponse.get_return();
     }
 
     /**
@@ -147,7 +146,7 @@ public class ContextServiceImpl implements ContextService {
         this.ctx = ctx;
     }
 
-    public ConnectorUtil getConnectorUtil() {
+    ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

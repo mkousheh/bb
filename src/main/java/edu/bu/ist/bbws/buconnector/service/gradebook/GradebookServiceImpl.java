@@ -177,7 +177,7 @@ public class GradebookServiceImpl implements GradebookService {
      * @return
      * @throws RemoteException
      */
-    public GradebookWSStub.AttemptVO getCourseScoreForColumnByLastAttempt(String courseId, String lastAttemptId) throws RemoteException {
+    GradebookWSStub.AttemptVO getCourseScoreForColumnByLastAttempt(String courseId, String lastAttemptId) throws RemoteException {
         GradebookWSStub.AttemptVO[] attemptVOs  = null;
         GradebookWSStub.AttemptVO attemptVO  = null;
         if (lastAttemptId != null){
@@ -252,7 +252,7 @@ public class GradebookServiceImpl implements GradebookService {
 
 
 
-    public ContextService getContextService() {
+    ContextService getContextService() {
         return contextService;
     }
 
@@ -260,7 +260,7 @@ public class GradebookServiceImpl implements GradebookService {
         this.contextService = contextService;
     }
 
-    public CourseService getCourseService() {
+    CourseService getCourseService() {
         return courseService;
     }
 
@@ -268,7 +268,7 @@ public class GradebookServiceImpl implements GradebookService {
         this.courseService = courseService;
     }
 
-    public ConnectorUtil getConnectorUtil() {
+    ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

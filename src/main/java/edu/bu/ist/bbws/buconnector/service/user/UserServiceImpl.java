@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public ContextService getContextService() {
+    ContextService getContextService() {
         return contextService;
     }
 
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
         this.contextService = contextService;
     }
 
-    public CourseService getCourseService() {
+    CourseService getCourseService() {
         return courseService;
     }
 
@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
         this.courseService = courseService;
     }
 
-    public ConnectorUtil getConnectorUtil() {
+    ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

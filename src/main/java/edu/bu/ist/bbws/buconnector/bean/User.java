@@ -11,6 +11,7 @@ import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,16 +53,12 @@ public class User {
                 this.userName = userVO.getName();
                 if (userVO.getInsRoles() != null) {
                     List<String> instRoles = new ArrayList<String>();
-                    for (String insRole : userVO.getInsRoles()) {
-                        instRoles.add(insRole);
-                    }
+                    Collections.addAll(instRoles, userVO.getInsRoles());
                     this.insRoles = instRoles;
                 }
                 if (userVO.getSystemRoles() != null) {
                     List<String> systemRoles = new ArrayList<String>();
-                    for (String systemRole : userVO.getSystemRoles()) {
-                        systemRoles.add(systemRole);
-                    }
+                    Collections.addAll(systemRoles, userVO.getSystemRoles());
                     this.systemRoles = systemRoles;
                 }
             }
@@ -85,17 +82,13 @@ public class User {
 
             if (userVO.getInsRoles() != null) {
                 List<String> instRoles = new ArrayList<String>();
-                for (String insRole : userVO.getInsRoles()) {
-                    instRoles.add(insRole);
-                }
+                Collections.addAll(instRoles, userVO.getInsRoles());
                 this.insRoles = instRoles;
             }
 
             if (userVO.getSystemRoles() != null) {
                 List<String> systemRoles = new ArrayList<String>();
-                for (String systemRole : userVO.getSystemRoles()) {
-                    systemRoles.add(systemRole);
-                }
+                Collections.addAll(systemRoles, userVO.getSystemRoles());
                 this.systemRoles = systemRoles;
             }
         }

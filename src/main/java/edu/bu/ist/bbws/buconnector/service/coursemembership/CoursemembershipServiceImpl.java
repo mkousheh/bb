@@ -197,7 +197,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
 
 
-    public ContextService getContextService() {
+    ContextService getContextService() {
         return contextService;
     }
 
@@ -205,7 +205,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         this.contextService = contextService;
     }
 
-    public CourseService getCourseService() {
+    CourseService getCourseService() {
         return courseService;
     }
 
@@ -213,7 +213,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         this.courseService = courseService;
     }
 
-    public UserService getUserService() {
+    UserService getUserService() {
         return userService;
     }
 
@@ -221,7 +221,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         this.userService = userService;
     }
 
-    public ConnectorUtil getConnectorUtil() {
+    ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

@@ -3,7 +3,6 @@ package edu.bu.ist.bbws.buconnector.service.course;
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 /**
  * Created by mkousheh on 8/24/14.
