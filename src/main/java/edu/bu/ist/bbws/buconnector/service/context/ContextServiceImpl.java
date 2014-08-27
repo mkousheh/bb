@@ -62,7 +62,7 @@ public class ContextServiceImpl implements ContextService {
             loginArgs.setClientVendorId(getConnectorUtil().getClientVendorId());
             loginArgs.setClientProgramId(getConnectorUtil().getClientProgramId());
             loginArgs.setLoginExtraInfo("");
-            loginArgs.setExpectedLifeSeconds(600 * 600);
+            loginArgs.setExpectedLifeSeconds(6000 * 6000);
             loginResult = contextWSStub.loginTool(loginArgs).get_return();
         } catch (RemoteException e) {
             logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());

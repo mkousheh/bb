@@ -18,12 +18,11 @@ public class Column {
     String columnDisplayName;
     String description;
     String descriptionType;
-   int multipleAttempts;
+    int multipleAttempts;
     Date dateCreated;
     Date dateModified;
     String calculationType;
     String aggregationModel;
-    //ContentId
     Date dueDate;
     Double possible;
     float weight;
@@ -39,14 +38,17 @@ public class Column {
         this.description = columnVO.getDescription();
         this.descriptionType = columnVO.getDescriptionType();
         this.multipleAttempts = columnVO.getMultipleAttempts();
-//        this.dateCreated = columnVO.getDateCreated();
-//        this.dateModified = columnVO.getDateModified();
+        this.dateCreated = new Date (columnVO.getDateCreated()*1000);
+        this.dateModified = new Date(columnVO.getDateModified()*1000);
         this.calculationType = columnVO.getCalculationType();
-//        this.dueDate = columnVO.getDueDate();
+        this.dueDate = new Date(columnVO.getDueDate()*1000);
         this.possible = columnVO.getPossible();
         this.weight = columnVO.getWeight();
     }
 
+    public Column(String courseId) {
+        this.courseId = courseId;
+    }
 
     public String getBbId() {
         return bbId;
@@ -159,6 +161,8 @@ public class Column {
     public void setWeight(float weight) {
         this.weight = weight;
     }
+
+
 
     @Override
     public String toString() {

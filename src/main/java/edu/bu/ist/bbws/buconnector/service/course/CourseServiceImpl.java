@@ -35,11 +35,11 @@ public class CourseServiceImpl implements CourseService {
      * @throws RemoteException
      */
     @Override
-    public List<String> getBlackboardCourses()
+    public CourseWSStub.CourseVO[] getBlackboardCourses()
             throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseWSStub.CourseVO[] courseVOs = null;
-        List<String> courseTitles = new ArrayList<String>();
+
         try{
             // get courses objects fot the list of courses found in user's membership
             CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
@@ -59,18 +59,15 @@ public class CourseServiceImpl implements CourseService {
         } finally {
             ctx.terminate();
         }
-        for (CourseWSStub.CourseVO courseVO : courseVOs) {
-            courseTitles.add(courseVO.getName());
-        }
-        return courseTitles;
+        return courseVOs;
     }
 
-    /**
-     * retrieve course object for a given course id
-     * @param courseBbId
-     * @return
-     * @throws RemoteException
-     */
+            /**
+             * retrieve course object for a given course id
+             * @param courseBbId
+             * @return
+             * @throws RemoteException
+             */
     public CourseWSStub.CourseVO getCourseByBbId( String courseBbId) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseWSStub.CourseVO[] courseVOs;
@@ -263,24 +260,6 @@ public class CourseServiceImpl implements CourseService {
         return courseVOs;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    public List<String> getCoursesForUserInRole(String modulePath,
-                                                String blackboardServerURL, String sharedSecret, String vendorId,
-                                                String clientProgramId, String userId, String role) throws RemoteException {
-
-        return null;
-    }
 
     public ContextService getContextService() {
         return contextService;

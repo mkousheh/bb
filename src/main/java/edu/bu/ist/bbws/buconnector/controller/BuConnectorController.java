@@ -16,6 +16,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.log4j.Logger;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,15 +58,20 @@ public class BuConnectorController {
     /**
      * get all Blackboard courses
      */
-    public void getBlackboardCourses() {
+    public List<Course> getBlackboardCourses() {
+        List<Course> courses = new ArrayList<Course>();
         try {
-            List<String> courseTitles = getCourseService().getBlackboardCourses();
-            logger.info("Course in blackboard  are: " + courseTitles);
+            CourseWSStub.CourseVO[] courseVOs = getCourseService().getBlackboardCourses();
+            if (courseVOs != null){
+                for (CourseWSStub.CourseVO courseVO : courseVOs) {
+                    courses.add(new Course(courseVO));
+                }
+            }
         } catch (RemoteException e) {
-            logger.error("There was an error when trying to get the Blackboard courses " + e.getMessage());
+            logger.error("There was an error when trying getBlackboardCourses : " + e.getMessage());
         }
+        return courses;
     }
-
 
     /**
      * gets course object for a given BB Internal id ("_99999_9" format)
@@ -254,7 +260,7 @@ public class BuConnectorController {
                     membership.setUser(loadUserByKey(courseMembershipVO.getUserId()));
                     membership.setBbId(courseMembershipVO.getId());
                     membership.setAvailable(courseMembershipVO.getAvailable());
-                    membership.setEnrollmentDate(courseMembershipVO.getEnrollmentDate());
+                    membership.setEnrollmentDate(new Date(courseMembershipVO.getEnrollmentDate()*1000));
                     membership.setCourse(loadCourseByKey(courseMembershipVO.getCourseId()));
                     membership.setCourseMembershipRole(loadCourseMembershipRoleByKey(courseMembershipVO.getRoleId()));
 
@@ -311,27 +317,25 @@ public class BuConnectorController {
     return column;
     }
 
-
-
-
     /**
      * gets all course scores
      *
      * @param courseId
      */
-    public void getCourseTotalScore(String courseId) {
+    public List<Score> getCourseTotalScore(String courseId) {
+        List<Score> scores = new ArrayList<Score>();
         try {
-            GradebookWSStub.ScoreVO[] scores = getGradebookService().getCourseTotalScore(courseId);
-            logger.info("Scores for Course id " + courseId + " are ");
-            for (GradebookWSStub.ScoreVO score : scores) {
-                logger.info(score.getColumnId() + " " + score.getGrade() + " member id:" + score.getMemberId());
+            GradebookWSStub.ScoreVO[] scoreVOs = getGradebookService().getCourseTotalScore(courseId);
+            if (scoreVOs != null) {
+                for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
+                    scores.add(new Score(scoreVO));
+                }
             }
         } catch (RemoteException e) {
             logger.error("There was an error when trying to get Course users for course id  " + courseId + ": " + e.getMessage());
         }
-
+    return scores;
     }
-
 
     /**
      * gets all scores by column for a course
@@ -339,18 +343,19 @@ public class BuConnectorController {
      * @param courseId
      * @param columnName
      */
-    public void getCourseScoreByColumn(String courseId, String columnName) {
+    public List<Score> getCourseScoreByColumn(String courseId, String columnName) {
+        List<Score> scores = new ArrayList<Score>();
         try {
-            GradebookWSStub.ScoreVO[] scores = getGradebookService().getCourseScoreByColumn(courseId, columnName);
-            logger.info("Scores for Course id " + courseId + " and column " + columnName + " are:");
-            if (scores != null) {
-                for (GradebookWSStub.ScoreVO score : scores) {
-                    logger.info(score.getColumnId() + " " + score.getGrade() + " member id:" + score.getMemberId());
+            GradebookWSStub.ScoreVO[] scoreVOs = getGradebookService().getCourseScoreByColumn(courseId, columnName);
+            if (scoreVOs != null) {
+                for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
+                    scores.add(new Score(scoreVO));
                 }
             }
         } catch (RemoteException e) {
-            logger.error("There was an error when trying to get Course users for course id  " + courseId + ": " + e.getMessage());
+            logger.error("There was an error when trying to get scores for course id  " + courseId + " for column (" + columnName + "): " + e.getMessage());
         }
+    return scores;
     }
 
     /**
@@ -460,23 +465,24 @@ public Course loadCourseByKey(String courseBbId){
     try {
     courseVO = getCourseService().getCourseByBbId(courseBbId);
     if (courseVO != null) {
+        course.setBbId(courseVO.getId());
         course.setCourseId(courseVO.getCourseId());
-        course.setAvailable(courseVO.getAvailable());
         course.setBatchUid(courseVO.getBatchUid());
-        course.setBbLocalId(courseVO.getId());
-        course.setCourseServiceLevel(courseVO.getCourseServiceLevel());
-        course.setCourseId(courseVO.getCourseId());
-        course.setDescription(courseVO.getDescription());
-        course.setDuration(courseVO.getCourseDuration());
-        course.setEnrollmentType(courseVO.getEnrollmentType());
-        course.setInstitutionName(courseVO.getInstitutionName());
         course.setName(courseVO.getName());
+        course.setDescription(courseVO.getDescription());
+        course.setEnrollmentType(courseVO.getEnrollmentType());
+        course.setDuration(courseVO.getCourseDuration());
+        course.setAvailable(courseVO.getAvailable());
+        course.setInstitutionName(courseVO.getInstitutionName());
+        course.setCourseServiceLevel(courseVO.getCourseServiceLevel());
     }
     } catch (RemoteException e) {
         e.printStackTrace();
     }
     return course;
 }
+
+
 
     public CourseMembershipRole loadCourseMembershipRoleByKey(String courseMembershipRoleId){
         CourseMembershipRole courseMembershipRole = new CourseMembershipRole();

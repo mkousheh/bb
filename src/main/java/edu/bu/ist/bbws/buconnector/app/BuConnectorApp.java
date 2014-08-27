@@ -17,6 +17,11 @@ public class BuConnectorApp {
     ApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext_BuConnector.xml");
     BuConnectorController buConnectorController;
 
+    public BuConnectorApp() {
+        buConnectorController = (BuConnectorController) ctx.getBean("buConnectorController");
+        buConnectorController.login();
+    }
+
     /**
      * @param args
      */
@@ -26,75 +31,72 @@ public class BuConnectorApp {
     }
 
     private void run() {
-        buConnectorController = (BuConnectorController) ctx.getBean("buConnectorController");
-        buConnectorController.login();
 
-        String courseBbId = "_3400_1";
-        String usernBbId = "_34048_1";
+        String courseBbId = "_17929_1"; // _3400_1
+        String usernBbId = "_64517_1"; //  _34048_1
         String courseMembershipBbId = "_784026_1";
 
         String userId = "U84206596";
 
-        String courseId = "00cwr_orc_labsafety_training";
-        String username = "rjaeckel";
+        String courseId = "14sum2sedme504sb1"; //  00cwr_orc_labsafety_training
+        String username = "rafonso"; // rafonso rjaeckel
 
-        String courseMembershipRoleName = "On Campus Instructor";
+        String courseMembershipRoleName = "STUDENT"; // STUDENT  On Campus Instructor
         String courseMembershipRoleId = "OnCampusInstructor";
 
-        String columnName = "Universal Laboratory Safety Training Quiz";
+        String columnName = "Homework #5"; // Homework #5 Universal Laboratory Safety Training Quiz
 
 
-//       buConnectorController.getBlackboardCourses();
-
+        List<Course> allCourses = buConnectorController.getBlackboardCourses();
+        logger.info("courses for user (" + username +")");
+        for (Course course : allCourses){
+            logger.info(course.toString());
+        }
 
 /*
-        Course course = buConnectorController.getCourseByBbId(courseBbId);
+        Course courseByBbId = buConnectorController.getCourseByBbId(courseBbId);
         logger.info("Course infor course Internal BB id: " + courseBbId);
-        logger.info(course);
-*/
+        logger.info(courseByBbId);
 
-/*
-        User user = buConnectorController.getUserByUserBbId(usernBbId);
+
+
+        User userByUserBbId = buConnectorController.getUserByUserBbId(usernBbId);
         logger.info("User information for user: " + usernBbId);
-        logger.info(user);
-*/
+        logger.info(userByUserBbId);
 
-/*
-        List<User> users = buConnectorController.getCourseUsersByCourseId(courseId);
+
+
+        List<User> courseUsersByCourseId = buConnectorController.getCourseUsersByCourseId(courseId);
         logger.info("Users for course id: " + courseId);
-        for (User user : users){
+        for (User user : courseUsersByCourseId){
             logger.info(user.toString());
         }
-*/
 
-/*
-       User user = buConnectorController.getUserByUsername(username);
+       User userByUsername = buConnectorController.getUserByUsername(username);
        logger.info("User information for user: " + username);
-       logger.info(user);
-*/
+       logger.info(userByUsername);
 
-/*
+
+
         CourseMembershipRole courseMembershipRoleByName= buConnectorController.getCourseMembershipRoleByName(courseMembershipRoleName);
         logger.info("CourseMembershipRole information for course membership role name: " + courseMembershipRoleName);
         logger.info(courseMembershipRoleByName);
-*/
 
 
-/*
         CourseMembershipRole courseMembershipRoleById= buConnectorController.getCourseMembershipRoleById(courseMembershipRoleId);
         logger.info("CourseMembershipRole information for course membership role name: " + courseMembershipRoleId);
         logger.info(courseMembershipRoleById);
-*/
 
-/*
+
+
         List<Course> coursesForUser = buConnectorController.getCoursesForUser(username);
         logger.info("courses for user (" + username +")");
         for (Course course : coursesForUser){
             logger.info(course.toString());
         }
-*/
 
-/*
+
+
          List<Course> coursesForUserInRole = buConnectorController.getCoursesForUserInRole(username, courseMembershipRoleName);
          logger.info("courses for user (" + username +") in role (" + courseMembershipRoleName +")");
         for (Course course : coursesForUserInRole){
@@ -113,19 +115,24 @@ public class BuConnectorApp {
         for (Column column : columns){
             logger.info(column.toString());
         }
-*/
+
 
         Column column = buConnectorController.getCourseColumnByColumnName(courseId, columnName);
         logger.info("Column for course course id (" + courseId +") and column name (" + columnName + ")");
         logger.info(column.toString());      //TODO check for NPE
+*/
+        List<Score> courseTotalScores = buConnectorController.getCourseTotalScore(courseId);
+        logger.info("Score for course id (" + courseId +")");
+        for (Score score : courseTotalScores){
+            logger.info(score.toString());
+        }
 
-
-//        buConnectorController.getCourseTotalScore("00cwr_orc_labsafety_training"); //00cwr_orc_labsafety_training _322_1
+        List<Score> courseScoresByColumn = buConnectorController.getCourseScoreByColumn(courseId, columnName);
+        logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
+        for (Score score : courseScoresByColumn){
+            logger.info(score.toString());
+        }
 //        buConnectorController.getCourseScoreByColumn("00cwr_orc_labsafety_training", "Universal Laboratory Safety Training Quiz"); //00cwr_orc_labsafety_training _322_1
-
-
-
-
 
 //        buConnectorController.getCourseScoreByColumnAfterSubmissionDate("00cwr_orc_labsafety_training", "Universal Laboratory Safety Training Quiz", ""); //00cwr_orc_labsafety_training _322_1
 

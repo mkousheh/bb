@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface CourseService {
 
-    public List<String> getBlackboardCourses() throws RemoteException;
+    public CourseWSStub.CourseVO[] getBlackboardCourses() throws RemoteException;
 
     public CourseWSStub.CourseVO getCourseByBbId( String courseBbId) throws RemoteException;
 

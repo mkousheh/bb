@@ -1,5 +1,8 @@
 package edu.bu.ist.bbws.buconnector.bean;
 
+import edu.bu.ist.bbws._generated.course.CourseWSStub;
+import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
+
 /**
  * Created by mkousheh on 8/25/14.
  */
@@ -8,23 +11,45 @@ public class Score {
     String bbId;
     Column column;
     Course course;
-    String firstAttemptId;
     String grade;
+    String firstAttemptId;
+    String lastAttemptId;
     String lowestAttemptId;
     String highestAttemptId;
-    String lastAttemptId;
     int status;
+ //   CourseMembership membership;
     //Member memberId = {java.lang.String@3219}"_784185_1"
     //Schema SchemaGradeValue = {java.lang.String@3220}"460.00"
     String shortInstructorComments;
     String shortStudentComments;
     String instructorComments;
     String studentComments;
-    String averageScore;
+    double averageScore;
 
     public Score() {
     }
 
+    public Score(GradebookWSStub.ScoreVO scoreVO) {
+        this.bbId = scoreVO.getId();
+  //      this.column = scoreVO.getColumnId();
+  //      this.course = scoreVO.getCourseId();
+        this.grade = scoreVO.getGrade();
+        this.firstAttemptId = scoreVO.getFirstAttemptId();
+        this.lastAttemptId = scoreVO.getLastAttemptId();
+        this.lowestAttemptId = scoreVO.getLowestAttemptId();
+        this.highestAttemptId = scoreVO.getHighestAttemptId();
+        this.status = scoreVO.getStatus();
+        //   CourseMembership membership;
+
+        //Member memberId = {java.lang.String@3219}"_784185_1"
+        //Schema SchemaGradeValue = {java.lang.String@3220}"460.00"
+        this.shortInstructorComments = scoreVO.getShortInstructorComments();
+        this.shortStudentComments = scoreVO.getShortStudentComments();
+        this.instructorComments = scoreVO.getInstructorComments();
+        this.studentComments = scoreVO.getStudentComments();
+        this.averageScore = scoreVO.getAverageScore();
+
+    }
     public String getBbId() {
         return bbId;
     }
@@ -129,11 +154,11 @@ public class Score {
         this.studentComments = studentComments;
     }
 
-    public String getAverageScore() {
+    public double getAverageScore() {
         return averageScore;
     }
 
-    public void setAverageScore(String averageScore) {
+    public void setAverageScore(double averageScore) {
         this.averageScore = averageScore;
     }
 
@@ -143,11 +168,11 @@ public class Score {
                 "bbId='" + bbId + '\'' +
                 ", column=" + column +
                 ", course=" + course +
-                ", firstAttemptId='" + firstAttemptId + '\'' +
                 ", grade='" + grade + '\'' +
+                ", firstAttemptId='" + firstAttemptId + '\'' +
+                ", lastAttemptId='" + lastAttemptId + '\'' +
                 ", lowestAttemptId='" + lowestAttemptId + '\'' +
                 ", highestAttemptId='" + highestAttemptId + '\'' +
-                ", lastAttemptId='" + lastAttemptId + '\'' +
                 ", status=" + status +
                 ", shortInstructorComments='" + shortInstructorComments + '\'' +
                 ", shortStudentComments='" + shortStudentComments + '\'' +

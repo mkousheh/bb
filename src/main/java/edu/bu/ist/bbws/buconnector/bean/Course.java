@@ -5,93 +5,76 @@ import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
 import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 
 /**
  * Created by mkousheh on 8/25/14.
  */
 public class Course {
 
-    boolean available;
-    String batchUid;
-    String duration;
+    String bbId;
     String courseId;
-    String courseServiceLevel;
+    String batchUid;
+    String name;
     String description;
     String enrollmentType;
-    String name;
+    Date startDate;
+    Date endDate;
+    String duration;
+    boolean available;
     String institutionName;
-    String bbLocalId;
-    String startDate;
-    String endDate;
+    String courseServiceLevel;
     Column columns;
 
     public Course() {
     }
 
     public Course(CourseWSStub.CourseVO courseV0) {
+        this.bbId = courseV0.getId();
         this.courseId = courseV0.getCourseId();
-        this.available = courseV0.getAvailable();
         this.batchUid = courseV0.getBatchUid();
-        this.bbLocalId = courseV0.getId();
-        this.courseServiceLevel = courseV0.getCourseServiceLevel();
-        this.courseId = courseV0.getCourseId();
-        this.description = courseV0.getDescription();
-        this.duration = courseV0.getCourseDuration();
-        this.enrollmentType = courseV0.getEnrollmentType();
-        this.institutionName = courseV0.getInstitutionName();
         this.name = courseV0.getName();
-//                this.startDate = courseV0.getStartDate();
-//                this.endDate = courseV0.getEndDate();
-
+        this.description = courseV0.getDescription();
+        this.enrollmentType = courseV0.getEnrollmentType();
+        this.startDate = new Date(courseV0.getStartDate() * 1000);
+        this.endDate = new Date(courseV0.getEndDate() * 1000);
+        this.duration = courseV0.getCourseDuration();
+        this.available = courseV0.getAvailable();
+        this.institutionName = courseV0.getInstitutionName();
+        this.courseServiceLevel = courseV0.getCourseServiceLevel();
+        this.columns = new Column();
     }
 
     public Course(String courseBbId) {
         CourseWSStub.CourseVO courseV0;
         try {
             courseV0 = new CourseServiceImpl().getCourseByBbId(courseBbId);
-                if (courseV0 != null) {
-                    this.courseId = courseV0.getCourseId();
-                    this.available = courseV0.getAvailable();
-                    this.batchUid = courseV0.getBatchUid();
-                    this.bbLocalId = courseV0.getId();
-                    this.courseServiceLevel = courseV0.getCourseServiceLevel();
-                    this.courseId = courseV0.getCourseId();
-                    this.description = courseV0.getDescription();
-                    this.duration = courseV0.getCourseDuration();
-                    this.enrollmentType = courseV0.getEnrollmentType();
-                    this.institutionName = courseV0.getInstitutionName();
-                    this.name = courseV0.getName();
+            if (courseV0 != null) {
+                this.bbId = courseV0.getId();
+                this.courseId = courseV0.getCourseId();
+                this.batchUid = courseV0.getBatchUid();
+                this.name = courseV0.getName();
+                this.description = courseV0.getDescription();
+                this.enrollmentType = courseV0.getEnrollmentType();
 //                this.startDate = courseV0.getStartDate();
 //                this.endDate = courseV0.getEndDate();
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+                this.duration = courseV0.getCourseDuration();
+                this.available = courseV0.getAvailable();
+                this.institutionName = courseV0.getInstitutionName();
+                this.courseServiceLevel = courseV0.getCourseServiceLevel();
+                this.columns = new Column(courseV0.getCourseId());
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
-
-    public boolean isAvailable() {
-        return available;
+    public String getBbId() {
+        return bbId;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
-    public String getBatchUid() {
-        return batchUid;
-    }
-
-    public void setBatchUid(String batchUid) {
-        this.batchUid = batchUid;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public void setBbId(String bbId) {
+        this.bbId = bbId;
     }
 
     public String getCourseId() {
@@ -102,12 +85,20 @@ public class Course {
         this.courseId = courseId;
     }
 
-    public String getCourseServiceLevel() {
-        return courseServiceLevel;
+    public String getBatchUid() {
+        return batchUid;
     }
 
-    public void setCourseServiceLevel(String courseServiceLevel) {
-        this.courseServiceLevel = courseServiceLevel;
+    public void setBatchUid(String batchUid) {
+        this.batchUid = batchUid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -126,12 +117,36 @@ public class Course {
         this.enrollmentType = enrollmentType;
     }
 
-    public String getName() {
-        return name;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public String getInstitutionName() {
@@ -142,45 +157,38 @@ public class Course {
         this.institutionName = institutionName;
     }
 
-    public String getBbLocalId() {
-        return bbLocalId;
+    public String getCourseServiceLevel() {
+        return courseServiceLevel;
     }
 
-    public void setBbLocalId(String bbLocalId) {
-        this.bbLocalId = bbLocalId;
+    public void setCourseServiceLevel(String courseServiceLevel) {
+        this.courseServiceLevel = courseServiceLevel;
     }
 
-    public String getStartDate() {
-        return startDate;
+    public Column getColumns() {
+        return columns;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setColumns(Column columns) {
+        this.columns = columns;
     }
 
     @Override
     public String toString() {
         return "Course{" +
-                "available=" + available +
-                ", batchUid='" + batchUid + '\'' +
-                ", duration='" + duration + '\'' +
+                "bbId='" + bbId + '\'' +
                 ", courseId='" + courseId + '\'' +
-                ", courseServiceLevel='" + courseServiceLevel + '\'' +
+                ", batchUid='" + batchUid + '\'' +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", enrollmentType='" + enrollmentType + '\'' +
-                ", name='" + name + '\'' +
-                ", institutionName='" + institutionName + '\'' +
-                ", bbLocalId='" + bbLocalId + '\'' +
                 ", startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
+                ", duration='" + duration + '\'' +
+                ", available=" + available +
+                ", institutionName='" + institutionName + '\'' +
+                ", courseServiceLevel='" + courseServiceLevel + '\'' +
+//                ", columns=" + columns.toString() +
                 '}';
     }
 }

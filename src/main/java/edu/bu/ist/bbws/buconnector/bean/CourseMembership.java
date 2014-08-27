@@ -2,6 +2,8 @@ package edu.bu.ist.bbws.buconnector.bean;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
 
+import java.sql.Date;
+
 
 /**
  * Created by mkousheh on 8/25/14.
@@ -10,7 +12,7 @@ public  class CourseMembership {
     String bbId;
     User user;
     Course course;
-    Long enrollmentDate;
+    Date enrollmentDate;
     CourseMembershipRole courseMembershipRole;
     boolean available;
 
@@ -21,7 +23,7 @@ public  class CourseMembership {
         this.bbId = courseMembershipVO.getId();
         this.user = new User(courseMembershipVO.getUserId());
         this.course = new Course(courseMembershipVO.getCourseId());
-        this.enrollmentDate = courseMembershipVO.getEnrollmentDate();
+        this.enrollmentDate = new Date(courseMembershipVO.getEnrollmentDate()*1000);
         this.courseMembershipRole = new CourseMembershipRole(courseMembershipVO.getRoleId());
         this.available = courseMembershipVO.getAvailable();
     }
@@ -50,11 +52,11 @@ public  class CourseMembership {
         this.course = course;
     }
 
-    public Long getEnrollmentDate() {
+    public Date getEnrollmentDate() {
         return enrollmentDate;
     }
 
-    public void setEnrollmentDate(Long enrollmentDate) {
+    public void setEnrollmentDate(Date enrollmentDate) {
         this.enrollmentDate = enrollmentDate;
     }
 
