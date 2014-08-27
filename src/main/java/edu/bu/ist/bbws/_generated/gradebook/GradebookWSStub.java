@@ -37184,8 +37184,9 @@
                            /**
                            * Auto generated getter method
                            * @return java.lang.String
+                            * @param courseInternalId
                            */
-                           public  java.lang.String getCourseId(){
+                           public  java.lang.String getCourseId(String courseInternalId){
                                return localCourseId;
                            }
 

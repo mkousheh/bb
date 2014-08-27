@@ -1,4 +1,4 @@
-package edu.bu.ist.bbws.buconnector.bean;
+package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
 import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipServiceImpl;

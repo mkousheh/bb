@@ -1,12 +1,18 @@
 package edu.bu.ist.bbws.buconnector.app;
 
-import edu.bu.ist.bbws.buconnector.bean.*;
+import edu.bu.ist.bbws.buconnector.model.*;
 import edu.bu.ist.bbws.buconnector.controller.BuConnectorController;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by mkousheh on 8/20/14.
@@ -14,10 +20,10 @@ import java.util.List;
 class BuConnectorApp {
     private static final Logger logger = Logger.getLogger(BuConnectorApp.class.getName());
 
-    private ApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext_BuConnector.xml");
     private BuConnectorController buConnectorController;
 
     public BuConnectorApp() {
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext_BuConnector.xml");
         buConnectorController = (BuConnectorController) ctx.getBean("buConnectorController");
         buConnectorController.login();
     }
@@ -38,27 +44,40 @@ class BuConnectorApp {
 
         String userId = "U84206596";
 
-        String courseId = "14sum2sedme504sb1"; //  00cwr_orc_labsafety_training
-        String username = "rafonso"; // rafonso rjaeckel
+        String courseId = "00cwr_orc_labsafety_training"; //  00cwr_orc_labsafety_training 14sum2sedme504sb1
+        String username = "rjaeckel"; // rafonso rjaeckel
 
-        String courseMembershipRoleName = "STUDENT"; // STUDENT  On Campus Instructor
+        String courseMembershipRoleName = "On Campus Instructor"; // STUDENT  On Campus Instructor
         String courseMembershipRoleId = "OnCampusInstructor";
 
-        String columnName = "Homework #5"; // Homework #5 Universal Laboratory Safety Training Quiz
+        String columnName = "Universal Laboratory Safety Training Quiz"; // Homework #5 Universal Laboratory Safety Training Quiz
 
-
+/*
         List<Course> allCourses = buConnectorController.getBlackboardCourses();
         logger.info("All BB courses: ");
         for (Course course : allCourses){
             logger.info(course.toString());
         }
-
+*/
 /*
+        List<Course> availableCourses = buConnectorController.getAvailableCourses();
+        logger.info("Available BB courses: ");
+        for (Course course : availableCourses){
+            logger.info(course.toString());
+        }
+
+
+        Course courseById = buConnectorController.getCourseById(courseId);
+        logger.info("Course info by course id: " + courseBbId);
+        logger.info(courseById);
+
         Course courseByBbId = buConnectorController.getCourseByBbId(courseBbId);
-        logger.info("Course infor course Internal BB id: " + courseBbId);
+        logger.info("Course info by course Internal BB id: " + courseBbId);
         logger.info(courseByBbId);
 
 
+*/
+/*
 
         User userByUserBbId = buConnectorController.getUserByUserBbId(usernBbId);
         logger.info("User information for user: " + usernBbId);
@@ -117,22 +136,59 @@ class BuConnectorApp {
         }
 
 
-        Column column = buConnectorController.getCourseColumnByColumnName(courseId, columnName);
+//        Column column = buConnectorController.getCourseColumnByColumnName(courseId, columnName);
+//        logger.info("Column for course course id (" + courseId +") and column name (" + columnName + ")");
+//        logger.info(column);
+
+
+
+        List<Column> columns = buConnectorController.getCourseColumnsByColumnName(courseId, columnName);
         logger.info("Column for course course id (" + courseId +") and column name (" + columnName + ")");
-        logger.info(column.toString());      //TODO check for NPE
-*/
+        for (Column column : columns){
+            logger.info(column.toString());
+        }
+
         List<Score> courseTotalScores = buConnectorController.getCourseTotalScore(courseId);
         logger.info("Score for course id (" + courseId +")");
         for (Score score : courseTotalScores){
             logger.info(score.toString());
         }
 
+
+
         List<Score> courseScoresByColumn = buConnectorController.getCourseScoreByColumn(courseId, columnName);
         logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
         for (Score score : courseScoresByColumn){
             logger.info(score.toString());
         }
-//        buConnectorController.getCourseScoreByColumn("00cwr_orc_labsafety_training", "Universal Laboratory Safety Training Quiz"); //00cwr_orc_labsafety_training _322_1
+*/
+
+        Date submissionDate = null;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -365);
+        submissionDate = cal.getTime();
+
+/*
+        String string = "August 09, 2014 22:19:43 ";
+        try {
+            submissionDate = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.ENGLISH).parse(string);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+*/
+        List<Score> courseScoresByColumnAfterSubmissionDate = buConnectorController.getCourseScoreByColumnAfterSubmissionDate(courseId, columnName, submissionDate);
+        logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
+        for (Score score : courseScoresByColumnAfterSubmissionDate){
+            logger.info(score.toString());
+        }
+        if (courseScoresByColumnAfterSubmissionDate != null){
+            logger.info("Total of records retrieved: "+courseScoresByColumnAfterSubmissionDate.size());
+
+        }
+
+  //      buConnectorController.getAttempts(courseId);
 
 //        buConnectorController.getCourseScoreByColumnAfterSubmissionDate("00cwr_orc_labsafety_training", "Universal Laboratory Safety Training Quiz", ""); //00cwr_orc_labsafety_training _322_1
 

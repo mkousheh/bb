@@ -77,8 +77,8 @@ public class ContextServiceImpl implements ContextService {
 
     /**
      * gets list cof courses for a user
-      * @param username
-     * @return
+      * @param username - bb batchId (alias)
+     * @return list of bb courses
      * @throws RemoteException
      */
     public ContextWSStub.CourseIdVO[] getMembershipFromContext (String username)
@@ -92,7 +92,7 @@ public class ContextServiceImpl implements ContextService {
 
     /**
      *
-     * @param client
+     * @param client client for the webservice call
      * @throws RemoteException
      */
     public void client_engage(ServiceClient client) throws RemoteException {
@@ -170,8 +170,8 @@ public class ContextServiceImpl implements ContextService {
 
         public void handle(Callback[] callbacks) throws IOException,
                 UnsupportedCallbackException {
-            for (int i = 0; i < callbacks.length; i++) {
-                WSPasswordCallback pwcb = (WSPasswordCallback) callbacks[i];
+            for (Callback callback : callbacks) {
+                WSPasswordCallback pwcb = (WSPasswordCallback) callback;
                 String pw = "nosession";
 
                 if (sessionId != null) {

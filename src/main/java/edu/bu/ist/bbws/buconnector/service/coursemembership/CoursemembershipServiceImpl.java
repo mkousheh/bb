@@ -24,9 +24,17 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
     private UserService userService;
     private ConnectorUtil connectorUtil;
 
+    public static final int BY_ID = 1;
+    public static final int BY_CRS_ID = 2;
+    public static final int BY_CRS_MEM_ID = 3;
+    public static final int BY_GRP_ID = 4;
+    public static final int BY_USER_ID = 5;
+    public static final int BY_CRS_ID_AND_USER_ID = 6;
+    public static final int BY_CRS_ID_AND_ROLE_ID = 7;
+
     /**
      * gets a role object by role name
-      * @param courseMembershipRoleId
+      * @param courseMembershipRoleId - bb course membership role identifier
      * @return
      * @throws RemoteException
      */
@@ -66,7 +74,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
     /**
      * gets a role object by role name
-     * @param courseMembershipRoleName
+     * @param courseMembershipRoleName - bb course membership role display name
      * @return
      * @throws RemoteException
      */
@@ -116,10 +124,10 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
         try {
 
             CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
-            membershipFilter.setFilterType(1); //will load CourseMembershipVO records by Id's.
+            membershipFilter.setFilterType(BY_ID); //will load CourseMembershipVO records by Id's.
 
             CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
-            courseMembership.setF(null);
+            courseMembership.setF(membershipFilter);
 
             CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
                     "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
@@ -137,8 +145,8 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
     }
     /**
      * get course membership for a given username and a course id
-     * @param username
-     * @param courseId
+     * @param username - bb batchId (alias)
+     * @param courseId - bb course identifier
      * @return
      * @throws RemoteException
      */
@@ -170,27 +178,28 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseMembershipWSStub.CourseMembershipVO[] bbCrsMemberships=null;
-        try {
+        if (userInternalId != null && courseInternalId != null ) {
+            try {
+                CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
+                membershipFilter.setFilterType(BY_CRS_ID_AND_USER_ID);
+                membershipFilter.setUserIds(new String[]{userInternalId});
 
-            CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
-            membershipFilter.setFilterType(6); //records by course and user Id's.
-            membershipFilter.setUserIds(new String[]{userInternalId});
+                CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
+                courseMembership.setF(membershipFilter);
+                courseMembership.setCourseId(courseInternalId);
 
-            CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
-            courseMembership.setF(membershipFilter);
-            courseMembership.setCourseId(courseInternalId);
-
-            CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
-                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
-            getContextService().client_engage(courseMembershipWSStub._getServiceClient());
-            CourseMembershipWSStub.GetCourseMembershipResponse courseMembershipResponse = courseMembershipWSStub.getCourseMembership(courseMembership);
-            bbCrsMemberships = courseMembershipResponse.get_return();
-        } catch (RemoteException e) {
-            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        } finally {
-            ctx.terminate();
+                CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
+                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
+                getContextService().client_engage(courseMembershipWSStub._getServiceClient());
+                CourseMembershipWSStub.GetCourseMembershipResponse courseMembershipResponse = courseMembershipWSStub.getCourseMembership(courseMembership);
+                bbCrsMemberships = courseMembershipResponse.get_return();
+            } catch (RemoteException e) {
+                logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            } finally {
+                ctx.terminate();
+            }
         }
         return bbCrsMemberships;
     }

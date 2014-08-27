@@ -23,13 +23,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * gets user object by user name
-     * @param userBbId
-     * @return
+     *
+     * @param userBbId - bb internal identifier
+     * @return user object by given bb user id
      * @throws RemoteException
      */
     public UserWSStub.UserVO getUserByUserBbId(String userBbId) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
-        UserWSStub.UserVO user=null;
+        UserWSStub.UserVO user = null;
         try {
             UserWSStub.UserFilter userFilter = new UserWSStub.UserFilter();
             userFilter.setFilterType(2);  // By BB Internal ID
@@ -57,13 +58,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * gets user object by user name
-     * @param username
-     * @return
+     *
+     * @param username - bb batchId (alias)
+     * @return user object by given user name (alias)
      * @throws RemoteException
      */
     public UserWSStub.UserVO getUserByUsername(String username) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
-        UserWSStub.UserVO user=null;
+        UserWSStub.UserVO user = null;
         try {
             UserWSStub.UserFilter userFilter = new UserWSStub.UserFilter();
             userFilter.setFilterType(3);  // GET_USER_BY_BATCH_ID_WITH_AVAILABILITY
@@ -90,20 +92,21 @@ public class UserServiceImpl implements UserService {
 
     /**
      * gets all course's users for a given course id
-     * @param courseId
-     * @return
+     *
+     * @param courseId - bb course identifier
+     * @return list of users for a given course id
      * @throws RemoteException
      */
     public UserWSStub.UserVO[] getCourseUsersByCourseId(String courseId) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
-        UserWSStub.UserVO[] bbCrsUsers=null;
-        try {
-            String courseInternalId = null;
-            CourseWSStub.CourseVO course = getCourseService().getCourseById(courseId);
-            if (course != null) {
-                courseInternalId = course.getId();
-            }
-            if (courseInternalId != null) {
+        UserWSStub.UserVO[] bbCrsUsers = null;
+
+        String courseInternalId = null;
+        CourseWSStub.CourseVO course = getCourseService().getCourseById(courseId);
+        if (course != null) {
+            courseInternalId = course.getId();
+
+            try {
                 UserWSStub.UserFilter userFilter = new UserWSStub.UserFilter();
                 userFilter.setFilterType(4);  // GET_USER_BY_COURSE_ID_WITH_AVAILABILITY	4
                 userFilter.setAvailable(Boolean.FALSE);
@@ -118,13 +121,14 @@ public class UserServiceImpl implements UserService {
                 getContextService().client_engage(userWSStub._getServiceClient());
                 UserWSStub.GetUserResponse userResponse = userWSStub.getUser(getUser);
                 bbCrsUsers = userResponse.get_return();
+
+            } catch (RemoteException e) {
+                logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            } finally {
+                ctx.terminate();
             }
-        } catch (RemoteException e) {
-            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        } finally {
-            ctx.terminate();
         }
         return bbCrsUsers;
     }

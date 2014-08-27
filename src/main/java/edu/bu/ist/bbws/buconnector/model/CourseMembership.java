@@ -1,4 +1,4 @@
-package edu.bu.ist.bbws.buconnector.bean;
+package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
 
@@ -9,12 +9,12 @@ import java.sql.Date;
  * Created by mkousheh on 8/25/14.
  */
 public  class CourseMembership {
-    String bbId;
-    User user;
-    Course course;
-    Date enrollmentDate;
-    CourseMembershipRole courseMembershipRole;
-    boolean available;
+    private String bbId;
+    private User user;
+    private Course course;
+    private Date enrollmentDate;
+    private CourseMembershipRole courseMembershipRole;
+    private boolean available;
 
     public CourseMembership() {
     }

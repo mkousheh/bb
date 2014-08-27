@@ -28,9 +28,16 @@ public class CourseServiceImpl implements CourseService {
     private UserService userService;
     private ConnectorUtil connectorUtil;
 
+    //Course Filter for Course Web Service
+    public static final int GET_ALL_COURSES = 0;
+    public static final int GET_COURSE_BY_COURSEID = 1;
+    public static final int GET_COURSE_BY_BATCHUID = 2;
+    public static final int GET_COURSE_BY_ID = 3;
+    public static final int GET_COURSE_BY_CATEGORY_ID = 4;
+    public static final int GET_COURSE_BY_SEARCH_KEYVALUE = 5;
     /**
      *  this method gets all Courses in Blackboard
-     * @return
+     * @return list of bb courses
      * @throws RemoteException
      */
     @Override
@@ -43,7 +50,44 @@ public class CourseServiceImpl implements CourseService {
             // get courses objects fot the list of courses found in user's membership
             CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-            courseFilter.setFilterType(0);
+            courseFilter.setFilterType(GET_ALL_COURSES);
+            courses.setFilter(courseFilter);
+            CourseWSStub courseWSStub = new CourseWSStub(ctx,
+                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+            getContextService().client_engage(courseWSStub._getServiceClient());
+
+            CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
+            courseVOs = getCourseResponse.get_return();
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+        return courseVOs;
+    }
+
+    /**
+     *  this method gets all Courses in Blackboard
+     * @return list of bb courses
+     * @throws RemoteException
+     */
+    @Override
+    public CourseWSStub.CourseVO[] getAvailableCourses()
+            throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        CourseWSStub.CourseVO[] courseVOs = null;
+
+        try{
+            // get courses objects fot the list of courses found in user's membership
+            CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
+            CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
+            courseFilter.setFilterType(GET_COURSE_BY_SEARCH_KEYVALUE);
+ //           courseFilter.setAvailable(1);
+            courseFilter.setSearchKey("localCourseDuration");
+            courseFilter.setSearchOperator("Equals");
+            courseFilter.setSearchValue("Continuous");
             courses.setFilter(courseFilter);
             CourseWSStub courseWSStub = new CourseWSStub(ctx,
                     "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
@@ -63,8 +107,8 @@ public class CourseServiceImpl implements CourseService {
 
             /**
              * retrieve course object for a given course id
-             * @param courseBbId
-             * @return
+             * @param courseBbId - bb local course identifier
+             * @return bb course if exist
              * @throws RemoteException
              */
     public CourseWSStub.CourseVO getCourseByBbId( String courseBbId) throws RemoteException {
@@ -74,7 +118,7 @@ public class CourseServiceImpl implements CourseService {
         try {
             CourseWSStub.GetCourse getCourse = new CourseWSStub.GetCourse();
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-            courseFilter.setFilterType(3); // BY Blackboard Internal ID
+            courseFilter.setFilterType(GET_COURSE_BY_ID);
             courseFilter.setIds(new String[]{courseBbId});
             getCourse.setFilter(courseFilter);
 
@@ -97,8 +141,8 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * retrieve course object for a given course id
-     * @param courseId
-     * @return
+     * @param courseId - bb course identifier
+     * @return bb course if exist
      * @throws RemoteException
      */
     public CourseWSStub.CourseVO getCourseById( String courseId) throws RemoteException {
@@ -108,13 +152,15 @@ public class CourseServiceImpl implements CourseService {
         try {
             CourseWSStub.GetCourse getCourse = new CourseWSStub.GetCourse();
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-            courseFilter.setFilterType(5);
+            courseFilter.setCourseIds(new String[]{courseId});
+            courseFilter.setFilterType(GET_COURSE_BY_COURSEID);
+/*            courseFilter.setFilterType(5);
             courseFilter.setSearchKey("CourseId");
             courseFilter.setSearchOperator("StartsWith");
             courseFilter.setSearchValue(courseId);
             Long the_time = Long.parseLong(String.valueOf(System.currentTimeMillis()).substring(0, 10)); //10 digit Long - seconds precision
             courseFilter.setSearchDate(the_time);
-            courseFilter.setSearchDateOperator("LessThan");
+            courseFilter.setSearchDateOperator("LessThan");*/
 
             getCourse.setFilter(courseFilter);
 
@@ -137,8 +183,8 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * get all bb courses for a given user
-     * @param username
-     * @return
+     * @param username - bb batchId (alias)
+     * @return list of bb courses
      * @throws RemoteException
      */
     @Override
@@ -161,7 +207,7 @@ public class CourseServiceImpl implements CourseService {
             // get courses objects fot the list of courses found in user's membership
             CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-            courseFilter.setFilterType(3); //3 - Load by ids and (course|org) flag
+            courseFilter.setFilterType(GET_COURSE_BY_ID);
 
             String[] courseIdsAsArr = courseIds.toArray(new String[courseIds.size()]);
 
@@ -188,9 +234,9 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * gets all courses for given username and rolename
-      * @param username
-     * @param courseMembershipRoleName
-     * @return
+      * @param username - bb batchId (alias)
+     * @param courseMembershipRoleName - bb course membership role display name
+     * @return list of bb courses
      * @throws RemoteException
      */
     @Override
@@ -239,7 +285,7 @@ public class CourseServiceImpl implements CourseService {
                 // get courses objects fot the list of courses found in user's membership
                 CourseWSStub.GetCourse courses = new CourseWSStub.GetCourse();
                 CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
-                courseFilter.setFilterType(3); //3 - Load by ids and (course|org) flag
+                courseFilter.setFilterType(GET_COURSE_BY_ID);
                 courseFilter.setIds(fCourseIds);
                 courses.setFilter(courseFilter);
                 CourseWSStub courseWSStub = new CourseWSStub(ctx,
@@ -260,7 +306,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
-    public ContextService getContextService() {
+    ContextService getContextService() {
         return contextService;
     }
 
@@ -268,7 +314,7 @@ public class CourseServiceImpl implements CourseService {
         this.contextService = contextService;
     }
 
-    public CoursemembershipService getCoursemembershipService() {
+    CoursemembershipService getCoursemembershipService() {
         return coursemembershipService;
     }
 
@@ -284,7 +330,7 @@ public class CourseServiceImpl implements CourseService {
         this.gradebookService = gradebookService;
     }
 
-    public UserService getUserService() {
+    UserService getUserService() {
         return userService;
     }
 
@@ -292,7 +338,7 @@ public class CourseServiceImpl implements CourseService {
         this.userService = userService;
     }
 
-    public ConnectorUtil getConnectorUtil() {
+    ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

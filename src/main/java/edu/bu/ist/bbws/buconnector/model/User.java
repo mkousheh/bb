@@ -1,13 +1,7 @@
-package edu.bu.ist.bbws.buconnector.bean;
+package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.user.UserWSStub;
-import edu.bu.ist.bbws.buconnector.service.context.ContextService;
-import edu.bu.ist.bbws.buconnector.service.course.CourseService;
-import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
-import edu.bu.ist.bbws.buconnector.service.gradebook.GradebookService;
-import edu.bu.ist.bbws.buconnector.service.user.UserService;
 import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
-import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
