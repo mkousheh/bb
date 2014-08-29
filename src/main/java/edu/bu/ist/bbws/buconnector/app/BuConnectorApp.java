@@ -45,7 +45,7 @@ class BuConnectorApp {
         String userId = "U84206596";
 
         String courseId = "00cwr_orc_labsafety_training"; //  00cwr_orc_labsafety_training 14sum2sedme504sb1
-        String username = "rjaeckel"; // rafonso rjaeckel
+        String username = "kcabbott"; // rafonso rjaeckel kcabbott
 
         String courseMembershipRoleName = "On Campus Instructor"; // STUDENT  On Campus Instructor
         String courseMembershipRoleId = "OnCampusInstructor";
@@ -177,7 +177,7 @@ class BuConnectorApp {
             e.printStackTrace();
         }
 
-*/
+
         List<Score> courseScoresByColumnAfterSubmissionDate = buConnectorController.getCourseScoreByColumnAfterSubmissionDate(courseId, columnName, submissionDate);
         logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
         for (Score score : courseScoresByColumnAfterSubmissionDate){
@@ -187,6 +187,14 @@ class BuConnectorApp {
             logger.info("Total of records retrieved: "+courseScoresByColumnAfterSubmissionDate.size());
 
         }
+*/
+
+        List<Score> courseScoreByUserAndColumn = buConnectorController.getCourseScoreByUserAndColumn(courseId, username, columnName, submissionDate);
+        logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
+        for (Score score : courseScoreByUserAndColumn){
+            logger.info(score.toString());
+        }
+
 
   //      buConnectorController.getAttempts(courseId);
 

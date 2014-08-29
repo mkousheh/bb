@@ -2,9 +2,11 @@ package edu.bu.ist.bbws.buconnector.service.gradebook;
 
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
+import edu.bu.ist.bbws._generated.user.UserWSStub;
 import edu.bu.ist.bbws.buconnector.model.Score;
 import edu.bu.ist.bbws.buconnector.service.context.ContextService;
 import edu.bu.ist.bbws.buconnector.service.course.CourseService;
+import edu.bu.ist.bbws.buconnector.service.user.UserService;
 import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -25,6 +27,7 @@ public class GradebookServiceImpl implements GradebookService {
 
     private ContextService contextService;
     private CourseService courseService;
+    private UserService userService;
     private ConnectorUtil connectorUtil;
 
     public static final int GET_SCORE_BY_COURSE_ID = 1;
@@ -191,6 +194,7 @@ public class GradebookServiceImpl implements GradebookService {
         return scoreVOs;
     }
 
+
     /**
      * gets all scores by column for a course
      *
@@ -243,6 +247,63 @@ public class GradebookServiceImpl implements GradebookService {
     }
 
     /**
+     * gets all scores by column for a course
+     *
+     * @param courseId   - bb course identifier
+     * @param columnName - bb gradebook column display name
+     * @return list of scores for a given course per given column
+     * @throws RemoteException
+     */
+    public GradebookWSStub.ScoreVO[] getCourseScoreByUsernameAndColumn(String courseId, String username, String columnName) throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        GradebookWSStub.ScoreVO[] scoreVOs = null;
+
+        String courseInternalId = null;
+        CourseWSStub.CourseVO courseVO = getCourseService().getCourseById(courseId);
+        if (courseVO != null) {
+            courseInternalId = courseVO.getId();
+        }
+
+        String userInternalId = null;
+        UserWSStub.UserVO user = getUserService().getUserByUsername(username);
+        if (user != null) {
+            userInternalId = user.getId();
+        }
+
+        String columnInternalId = null;
+        GradebookWSStub.ColumnVO[] columnVOs = getCourseColumnsByColumnName(courseId, columnName);
+        if (columnVOs != null) {
+            columnInternalId = columnVOs[0].getId();
+        }
+        if (courseInternalId != null && columnInternalId != null) {
+            try {
+                GradebookWSStub.ScoreFilter scoreFilter = new GradebookWSStub.ScoreFilter();
+                scoreFilter.setFilterType(GET_SCORE_BY_COLUMN_ID_AND_USER_ID);
+                scoreFilter.setColumnId(columnInternalId);
+                scoreFilter.setUserIds(new String[]{userInternalId});
+//            scoreFilter.setMemberIds(new String[]{"_810183_1"});
+                GradebookWSStub.GetGrades grades = new GradebookWSStub.GetGrades();
+                grades.setFilter(scoreFilter);
+
+                grades.setCourseId(courseInternalId);
+
+                GradebookWSStub gradebookWSStub = new GradebookWSStub(ctx,
+                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Gradebook.WS");
+                getContextService().client_engage(gradebookWSStub._getServiceClient());
+                GradebookWSStub.GetGradesResponse gradesResponse = gradebookWSStub.getGrades(grades);
+
+                scoreVOs = gradesResponse.get_return();
+            } catch (RemoteException e) {
+                logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            } finally {
+                ctx.terminate();
+            }
+        }
+        return scoreVOs;
+    }
+    /**
      * @param courseId       - bb course identifier
      * @param columnName     - bb gradebook column display name
      * @param submissionDate
@@ -260,6 +321,34 @@ public class GradebookServiceImpl implements GradebookService {
                 GradebookWSStub.AttemptVO lastAttempt = getAttempt(courseId, scoreVO.getLastAttemptId());
                 if (lastAttempt != null) {
                     if (lastAttempt.getStatus().equalsIgnoreCase("Completed") && lastAttempt.getCreationDate()*1000 >= submissionDateLong) {
+                        Date d = new Date(lastAttempt.getAttemptDate()*1000);
+                        logger.info("date: "+d);
+                        scores.add(scoreVO);
+                    }
+                }
+            }
+        }
+        return scores;
+    }
+
+    /**
+     * @param courseId       - bb course identifier
+     * @param columnName     - bb gradebook column display name
+     * @param submissionDate
+     * @return list of scores for given course per column after a given date
+     * @throws RemoteException
+     */
+    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAndColumn(String courseId, String username, String columnName, Date submissionDate) throws RemoteException {
+
+        List<GradebookWSStub.ScoreVO> scores= new ArrayList<GradebookWSStub.ScoreVO>();
+        long submissionDateLong = submissionDate.getTime();
+
+        GradebookWSStub.ScoreVO[] scoreVOs = getCourseScoreByUsernameAndColumn(courseId, username, columnName);
+        for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
+            if (scoreVO.getLastAttemptId() != null) {
+                GradebookWSStub.AttemptVO lastAttempt = getAttempt(courseId, scoreVO.getLastAttemptId());
+                if (lastAttempt != null) {
+                    if (lastAttempt.getStatus().equalsIgnoreCase("Completed") ){//&& lastAttempt.getCreationDate()*1000 >= submissionDateLong) {
                         Date d = new Date(lastAttempt.getAttemptDate()*1000);
                         logger.info("date: "+d);
                         scores.add(scoreVO);
@@ -325,6 +414,14 @@ public class GradebookServiceImpl implements GradebookService {
 
     public void setCourseService(CourseService courseService) {
         this.courseService = courseService;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     ConnectorUtil getConnectorUtil() {

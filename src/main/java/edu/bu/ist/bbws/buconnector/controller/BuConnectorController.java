@@ -410,6 +410,28 @@ public class BuConnectorController {
      * @param submissionDate
      *
      */
+    public List<Score>  getCourseScoreByUserAndColumn(String courseId, String username, String columnName, java.util.Date submissionDate) {
+        List<Score> scores = new ArrayList<Score>();
+        try {
+            List<GradebookWSStub.ScoreVO> scoreVOs = getGradebookService().getCourseScoreByUserAndColumn(courseId.trim(), username.trim(), columnName.trim(), submissionDate);
+            logger.info("Scores for Course id " + courseId + " for user " + username +" and column " + columnName + " are:");
+            if (scoreVOs != null) {
+                for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
+                    scores.add(new Score(scoreVO));
+                }
+            }
+        } catch (RemoteException e) {
+            logger.error("There was an error when trying to execute method getCourseScoreByColumnAfterSubmissionDate for params (" + courseId +", "+ columnName +", "+ submissionDate + ") : " + e.getMessage());
+        }
+        return scores;
+    }
+
+    /**
+     * @param courseId - bb course identifier
+     * @param columnName - bb gradebook column display name
+     * @param submissionDate
+     *
+     */
     public List<Score>  getCourseScoreByColumnAfterSubmissionDate(String courseId, String columnName, java.util.Date submissionDate) {
         List<Score> scores = new ArrayList<Score>();
         try {
