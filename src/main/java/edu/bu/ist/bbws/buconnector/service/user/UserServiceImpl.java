@@ -3,11 +3,14 @@ package edu.bu.ist.bbws.buconnector.service.user;
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.user.UserWSStub;
 import edu.bu.ist.bbws.buconnector.service.context.ContextService;
+import edu.bu.ist.bbws.buconnector.service.context.ContextServiceImpl;
 import edu.bu.ist.bbws.buconnector.service.course.CourseService;
+import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
 import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.rmi.RemoteException;
 
@@ -17,9 +20,13 @@ import java.rmi.RemoteException;
 public class UserServiceImpl implements UserService {
     private static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 
-    private ContextService contextService;
-    private CourseService courseService;
+
+    @Autowired
     private ConnectorUtil connectorUtil;
+    @Autowired
+    private ContextServiceImpl contextService;
+    @Autowired
+    private CourseServiceImpl courseService;
 
     /**
      * gets user object by user name
@@ -134,23 +141,23 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    ContextService getContextService() {
+    public ContextServiceImpl getContextService() {
         return contextService;
     }
 
-    public void setContextService(ContextService contextService) {
+    public void setContextService(ContextServiceImpl contextService) {
         this.contextService = contextService;
     }
 
-    CourseService getCourseService() {
+    public CourseServiceImpl getCourseService() {
         return courseService;
     }
 
-    public void setCourseService(CourseService courseService) {
+    public void setCourseService(CourseServiceImpl courseService) {
         this.courseService = courseService;
     }
 
-    ConnectorUtil getConnectorUtil() {
+    public ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

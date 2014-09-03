@@ -13,10 +13,9 @@ public interface CoursemembershipService {
 
     public CourseMembershipWSStub.CourseMembershipRoleVO getCourseMembershipRoleByName(String courseMembershipRoleName) throws RemoteException;
 
-    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByBbId(String membershipBbId) throws RemoteException;
 
     public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembership(String username, String courseId) throws RemoteException;
 
-    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByKey(String userInternalId, String courseInternalId) throws RemoteException;
+    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByUserBbIdAndCourseBbId(String userInternalId, String courseInternalId) throws RemoteException;
 
 }

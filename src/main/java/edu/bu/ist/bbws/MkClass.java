@@ -13,11 +13,11 @@ public class MkClass {
         BbWsConnector bbWsConnector = new BbWsConnector();
 
 
-        logger.debug("Course Exist: "+bbWsConnector.doesCourseExist("ORC Laboratory Safety Training"));
+        logger.debug("Course Exist: "+bbWsConnector.doesCourseExist("00cwr_orc_labsafety_training"));
         logger.info(bbWsConnector.getCourseByUserId("rjaeckel", "On Campus Instructor"));
        //bbWsConnector.getCourseMembership();
         //bbWsConnector.getBlackboardScore();
-        logger.info(bbWsConnector.getCourseInstitutionName("ORC Laboratory Safety Training"));
+        logger.info(bbWsConnector.getCourseInstitutionName("00cwr_orc_labsafety_training"));
 
         logger.info(bbWsConnector.getSystemRolesByUserName("rjaeckel"));
         logger.info(bbWsConnector.getInsRolesByUserName("rjaeckel"));

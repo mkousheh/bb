@@ -14,6 +14,7 @@ import org.apache.rampart.handler.WSSHandlerConstants;
 import org.apache.rampart.handler.config.OutflowConfiguration;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -31,6 +32,7 @@ public class ContextServiceImpl implements ContextService {
     private PasswordCallbackClass pwcb;
     private HttpClient httpClient;
     private ConfigurationContext ctx = null;
+    @Autowired
     private ConnectorUtil connectorUtil;
 
     /**
@@ -74,6 +76,34 @@ public class ContextServiceImpl implements ContextService {
 
         return loginResult;
     }
+    @Override
+    public boolean logout()
+            throws RemoteException {
+
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        boolean logoutResult;
+        try {
+
+            contextWSStub = new ContextWSStub(ctx,
+                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Context.WS");
+            pwcb = new PasswordCallbackClass();
+            client_engage(contextWSStub._getServiceClient());
+            String sessionValue = contextWSStub.initialize().get_return();
+
+            pwcb.setSessionId(sessionValue);
+
+            logoutResult = contextWSStub.logout().get_return();
+        } catch (RemoteException e) {
+            logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } finally {
+            ctx.terminate();
+        }
+
+        return logoutResult;
+    }
+
 
     /**
      * gets list cof courses for a user
@@ -107,7 +137,7 @@ public class ContextServiceImpl implements ContextService {
 
         // this will retain cookies within a single wsclient, but reusing the httpclient does the same thing across wsstubs:
         // op.setManageSession( true );
-        options.setTimeOutInMilliSeconds(120 * 1000);
+        options.setTimeOutInMilliSeconds(120 * 10000);
         options.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
         options.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, "true");
 

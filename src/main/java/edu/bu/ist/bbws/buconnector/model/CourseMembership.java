@@ -1,7 +1,11 @@
 package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+import edu.bu.ist.bbws.buconnector.service.course.CourseService;
+import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
+import edu.bu.ist.bbws.buconnector.service.user.UserService;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 
 
@@ -10,8 +14,8 @@ import java.sql.Date;
  */
 public  class CourseMembership {
     private String bbId;
-    private User user;
-    private Course course;
+    private String username;
+    private String courseId;
     private Date enrollmentDate;
     private CourseMembershipRole courseMembershipRole;
     private boolean available;
@@ -19,12 +23,20 @@ public  class CourseMembership {
     public CourseMembership() {
     }
 
-    public CourseMembership(CourseMembershipWSStub.CourseMembershipVO courseMembershipVO) {
+    public CourseMembership(CourseMembershipWSStub.CourseMembershipVO courseMembershipVO, CourseService courseService, UserService userService, CoursemembershipService coursemembershipService) {
         this.bbId = courseMembershipVO.getId();
-        this.user = new User(courseMembershipVO.getUserId());
-        this.course = new Course(courseMembershipVO.getCourseId());
+        try {
+            this.username = userService.getUserByUserBbId(courseMembershipVO.getUserId()).getName();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            this.courseId = courseService.getCourseByBbId(courseMembershipVO.getCourseId()).getCourseId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         this.enrollmentDate = new Date(courseMembershipVO.getEnrollmentDate()*1000);
-        this.courseMembershipRole = new CourseMembershipRole(courseMembershipVO.getRoleId());
+        this.courseMembershipRole = new CourseMembershipRole(courseMembershipVO.getRoleId(), coursemembershipService);
         this.available = courseMembershipVO.getAvailable();
     }
 
@@ -36,20 +48,20 @@ public  class CourseMembership {
         this.bbId = bbId;
     }
 
-    public User getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Course getCourse() {
-        return course;
+    public String getCourseId() {
+        return courseId;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
     }
 
     public Date getEnrollmentDate() {
@@ -80,10 +92,10 @@ public  class CourseMembership {
     public String toString() {
         return "CourseMembership{" +
                 "bbId='" + bbId + '\'' +
-                ", user=" + user.toString() +
-                ", course=" + course.toString() +
+                ", username='" + username + '\'' +
+                ", courseId='" + courseId + '\'' +
                 ", enrollmentDate=" + enrollmentDate +
-                ", courseMembershipRole=" + courseMembershipRole.toString() +
+                ", courseMembershipRole=" + courseMembershipRole +
                 ", available=" + available +
                 '}';
     }

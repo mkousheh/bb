@@ -10,8 +10,9 @@ import java.rmi.RemoteException;
  */
 public interface ContextService{
 
-    public boolean login()
-            throws RemoteException;
+    public boolean login() throws RemoteException;
+
+    public boolean logout() throws RemoteException;
 
     public void client_engage(ServiceClient client) throws RemoteException;
 

@@ -21,7 +21,11 @@ public interface GradebookService {
 
     public GradebookWSStub.ScoreVO[] getCourseScoreByColumn(String courseId, String columnName) throws RemoteException;
 
-    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAndColumn(String courseId, String username, String columnName, Date submissionDate) throws RemoteException;
+    public GradebookWSStub.ScoreVO[] getCourseScoreByUserAndColumn(String courseId, String username, String columnName) throws RemoteException;
+
+    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAndColumnAfterDate(String courseId, String username, String columnName, Date submissionDate) throws RemoteException;
+
+    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAfterDate(String courseId, String username, Date submissionDate) throws RemoteException;
 
     public List<GradebookWSStub.ScoreVO> getCourseScoreByColumnAfterSubmissionDate(String courseId, String columnName, Date submissionDate) throws RemoteException;
 

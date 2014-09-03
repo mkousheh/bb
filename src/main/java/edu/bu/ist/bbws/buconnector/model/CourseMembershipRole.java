@@ -1,6 +1,7 @@
 package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
 import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipServiceImpl;
 
 import java.rmi.RemoteException;
@@ -27,10 +28,10 @@ public class CourseMembershipRole {
         }
     }
 
-    public CourseMembershipRole(String courseMembershipRoleBbId) {
+    public CourseMembershipRole(String courseMembershipRoleBbId, CoursemembershipService coursemembershipService) {
         CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRoleVO;
         try{
-            courseMembershipRoleVO = new CoursemembershipServiceImpl().getCourseMembershipRoleById(courseMembershipRoleBbId);
+            courseMembershipRoleVO = coursemembershipService.getCourseMembershipRoleById(courseMembershipRoleBbId);
             if (courseMembershipRoleVO != null){
                 this.bbRoleId = courseMembershipRoleVO.getRoleIdentifier();
                 this.courseRoleDescription = courseMembershipRoleVO.getCourseRoleDescription();

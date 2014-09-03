@@ -3,13 +3,14 @@ package edu.bu.ist.bbws.buconnector.service.coursemembership;
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
 import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
 import edu.bu.ist.bbws._generated.user.UserWSStub;
-import edu.bu.ist.bbws.buconnector.service.context.ContextService;
-import edu.bu.ist.bbws.buconnector.service.course.CourseService;
-import edu.bu.ist.bbws.buconnector.service.user.UserService;
+import edu.bu.ist.bbws.buconnector.service.context.ContextServiceImpl;
+import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
+import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.rmi.RemoteException;
 
@@ -19,10 +20,6 @@ import java.rmi.RemoteException;
 public class CoursemembershipServiceImpl implements CoursemembershipService {
     private static final Logger logger = Logger.getLogger(CoursemembershipServiceImpl.class.getName());
 
-    private ContextService contextService;
-    private CourseService courseService;
-    private UserService userService;
-    private ConnectorUtil connectorUtil;
 
     public static final int BY_ID = 1;
     public static final int BY_CRS_ID = 2;
@@ -31,6 +28,14 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
     public static final int BY_USER_ID = 5;
     public static final int BY_CRS_ID_AND_USER_ID = 6;
     public static final int BY_CRS_ID_AND_ROLE_ID = 7;
+    @Autowired
+    private CourseServiceImpl courseService;
+    @Autowired
+    private ContextServiceImpl contextService;
+    @Autowired
+    private UserServiceImpl userService;
+    @Autowired
+    private ConnectorUtil connectorUtil;
 
     /**
      * gets a role object by role name
@@ -117,7 +122,7 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
      * @return
      * @throws RemoteException
      */
-    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByBbId(String membershipBbId) throws RemoteException {
+    private CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByBbId(String membershipBbId) throws RemoteException {
 
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseMembershipWSStub.CourseMembershipVO[] bbCrsMemberships=null;
@@ -164,29 +169,29 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
             userInternalId = user.getId();
         }
 
-        return getCourseMembershipByKey(userInternalId, courseInternalId);
+        return getCourseMembershipByUserBbIdAndCourseBbId(userInternalId, courseInternalId);
     }
 
     /**
      * get course membership for a given username and a course id
-     * @param userInternalId
-     * @param courseInternalId
+     * @param userBbId
+     * @param courseBbId
      * @return
      * @throws RemoteException
      */
-    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByKey(String userInternalId, String courseInternalId) throws RemoteException {
+    public CourseMembershipWSStub.CourseMembershipVO[] getCourseMembershipByUserBbIdAndCourseBbId(String userBbId, String courseBbId) throws RemoteException {
 
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         CourseMembershipWSStub.CourseMembershipVO[] bbCrsMemberships=null;
-        if (userInternalId != null && courseInternalId != null ) {
+        if (userBbId != null && courseBbId != null ) {
             try {
                 CourseMembershipWSStub.MembershipFilter membershipFilter = new CourseMembershipWSStub.MembershipFilter();
                 membershipFilter.setFilterType(BY_CRS_ID_AND_USER_ID);
-                membershipFilter.setUserIds(new String[]{userInternalId});
+                membershipFilter.setUserIds(new String[]{userBbId});
 
                 CourseMembershipWSStub.GetCourseMembership courseMembership = new CourseMembershipWSStub.GetCourseMembership();
                 courseMembership.setF(membershipFilter);
-                courseMembership.setCourseId(courseInternalId);
+                courseMembership.setCourseId(courseBbId);
 
                 CourseMembershipWSStub courseMembershipWSStub = new CourseMembershipWSStub(ctx,
                         "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/CourseMembership.WS");
@@ -206,27 +211,27 @@ public class CoursemembershipServiceImpl implements CoursemembershipService {
 
 
 
-    ContextService getContextService() {
+    ContextServiceImpl getContextService() {
         return contextService;
     }
 
-    public void setContextService(ContextService contextService) {
+    public void setContextService(ContextServiceImpl contextService) {
         this.contextService = contextService;
     }
 
-    CourseService getCourseService() {
+    CourseServiceImpl getCourseService() {
         return courseService;
     }
 
-    public void setCourseService(CourseService courseService) {
+    public void setCourseService(CourseServiceImpl courseService) {
         this.courseService = courseService;
     }
 
-    UserService getUserService() {
+    UserServiceImpl getUserService() {
         return userService;
     }
 
-    public void setUserService(UserService userService) {
+    public void setUserService(UserServiceImpl userService) {
         this.userService = userService;
     }
 

@@ -9,7 +9,7 @@ public class Score {
 
     private String bbId;
     private Column column;
-    private Course course;
+    private CourseBasic course;
     private String grade;
     private String firstAttemptId;
     private String lastAttemptId;
@@ -65,11 +65,11 @@ public class Score {
         this.column = column;
     }
 
-    public Course getCourse() {
+    public CourseBasic getCourse() {
         return course;
     }
 
-    public void setCourse(Course course) {
+    public void setCourse(CourseBasic course) {
         this.course = course;
     }
 
@@ -165,8 +165,8 @@ public class Score {
     public String toString() {
         return "Score{" +
                 "bbId='" + bbId + '\'' +
-                ", column=" + column +
-                ", course=" + course +
+                ", column=" + column.getColumnName() +
+                ", course=" + course.getCourseId() +
                 ", grade='" + grade + '\'' +
                 ", firstAttemptId='" + firstAttemptId + '\'' +
                 ", lastAttemptId='" + lastAttemptId + '\'' +

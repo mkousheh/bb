@@ -11,8 +11,6 @@ public interface CourseService {
 
     public CourseWSStub.CourseVO[] getBlackboardCourses() throws RemoteException;
 
-    public CourseWSStub.CourseVO[] getAvailableCourses() throws RemoteException;
-
     public CourseWSStub.CourseVO getCourseByBbId( String courseBbId) throws RemoteException;
 
     public CourseWSStub.CourseVO getCourseById(String courseId) throws RemoteException;

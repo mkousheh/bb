@@ -1,7 +1,8 @@
 package edu.bu.ist.bbws;
 
 import edu.bu.ist.bbws.buconnector.controller.BuConnectorController;
-import edu.bu.ist.bbws.buconnector.model.Course;
+import edu.bu.ist.bbws.buconnector.model.CourseBasic;
+import edu.bu.ist.bbws.buconnector.model.CourseDetail;
 import edu.bu.ist.bbws.buconnector.model.User;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +29,7 @@ public class BbWsConnector {
 
     public List<String> getSystemRolesByUserName(String username){
         List<String> userSysRoles = new ArrayList<String>();
-        User user = buConnectorController.getUserByUsername(username);
+        User user = buConnectorController.getUserByUsername(username.trim());
         for (String sysRole: user.getSystemRoles()){
             userSysRoles.add(sysRole);
         }
@@ -37,7 +38,7 @@ public class BbWsConnector {
 
     public List<String> getInsRolesByUserName(String username){
         List<String> userInsRoles = new ArrayList<String>();
-        User user = buConnectorController.getUserByUsername(username);
+        User user = buConnectorController.getUserByUsername(username.trim());
         for (String sysRole: user.getInsRoles()){
             userInsRoles.add(sysRole);
         }
@@ -45,7 +46,7 @@ public class BbWsConnector {
     }
 
     public boolean doesCourseExist(String courseId){
-        Course course = buConnectorController.getCourseById(courseId);
+        CourseBasic course = buConnectorController.getCourseById(courseId.trim());
         if (course != null){
             return true;
         }
@@ -53,7 +54,7 @@ public class BbWsConnector {
     }
 
     public String getCourseInstitutionName(String courseId){
-        Course course = buConnectorController.getCourseById(courseId);
+        CourseBasic course = buConnectorController.getCourseById(courseId.trim());
         if (course != null){
             return course.getInstitutionName();
         }
@@ -61,11 +62,11 @@ public class BbWsConnector {
     }
 
     public List<String[]> getCourseByUserId(String username, String roleName){
-        String crsInfo[][] = {};
-        List<Course> coursesForUserInRole = buConnectorController.getCoursesForUserInRole(username, roleName);
+        String crsInfo[][];
+        List<CourseBasic> coursesForUserInRole = buConnectorController.getCoursesForUserInRole(username.trim(), roleName.trim());
         crsInfo = new String[coursesForUserInRole.size()][3];
         int i=0;
-        for (Course course :coursesForUserInRole) {
+        for (CourseBasic course :coursesForUserInRole) {
             crsInfo[i][0] = course.getBbId();
             crsInfo[i][1] = course.getCourseId();
             crsInfo[i][2] = course.getName();

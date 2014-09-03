@@ -50,6 +50,7 @@
         <property name="coursemembershipService" ref="coursemembershipService"/>
         <property name="gradebookService" ref="gradebookService"/>
         <property name="userService" ref="userService"/>
+
     </bean>
 
     <bean id="connectorUtil" class="edu.bu.ist.bbws.buconnector.utils.ConnectorUtil">

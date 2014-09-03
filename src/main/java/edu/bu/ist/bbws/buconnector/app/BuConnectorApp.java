@@ -44,8 +44,8 @@ class BuConnectorApp {
 
         String userId = "U84206596";
 
-        String courseId = "00cwr_orc_labsafety_training"; //  00cwr_orc_labsafety_training 14sum2sedme504sb1
-        String username = "kcabbott"; // rafonso rjaeckel kcabbott
+        String courseId = "00cwr_orc_labsafety_training"; //00cwr_orc_labsafety_training   14sum2sedme504sb1
+        String username = "mkousheh"; // rafonso rjaeckel kcabbott
 
         String courseMembershipRoleName = "On Campus Instructor"; // STUDENT  On Campus Instructor
         String courseMembershipRoleId = "OnCampusInstructor";
@@ -53,31 +53,23 @@ class BuConnectorApp {
         String columnName = "Universal Laboratory Safety Training Quiz"; // Homework #5 Universal Laboratory Safety Training Quiz
 
 /*
-        List<Course> allCourses = buConnectorController.getBlackboardCourses();
+        List<CourseBasic> allCourses = buConnectorController.getBlackboardCourses();
         logger.info("All BB courses: ");
-        for (Course course : allCourses){
+        for (CourseBasic course : allCourses){
             logger.info(course.toString());
         }
+
 */
+
 /*
-        List<Course> availableCourses = buConnectorController.getAvailableCourses();
-        logger.info("Available BB courses: ");
-        for (Course course : availableCourses){
-            logger.info(course.toString());
-        }
-
-
-        Course courseById = buConnectorController.getCourseById(courseId);
-        logger.info("Course info by course id: " + courseBbId);
+        CourseBasic courseById = buConnectorController.getCourseById(courseId);
+        logger.info("Course info by course id: " + courseId);
         logger.info(courseById);
 
-        Course courseByBbId = buConnectorController.getCourseByBbId(courseBbId);
+        CourseBasic courseByBbId = buConnectorController.getCourseByBbId(courseBbId);
         logger.info("Course info by course Internal BB id: " + courseBbId);
         logger.info(courseByBbId);
 
-
-*/
-/*
 
         User userByUserBbId = buConnectorController.getUserByUserBbId(usernBbId);
         logger.info("User information for user: " + usernBbId);
@@ -90,12 +82,12 @@ class BuConnectorApp {
         for (User user : courseUsersByCourseId){
             logger.info(user.toString());
         }
-
+*/
        User userByUsername = buConnectorController.getUserByUsername(username);
        logger.info("User information for user: " + username);
        logger.info(userByUsername);
 
-
+/*
 
         CourseMembershipRole courseMembershipRoleByName= buConnectorController.getCourseMembershipRoleByName(courseMembershipRoleName);
         logger.info("CourseMembershipRole information for course membership role name: " + courseMembershipRoleName);
@@ -108,7 +100,7 @@ class BuConnectorApp {
 
 
 
-        List<Course> coursesForUser = buConnectorController.getCoursesForUser(username);
+        List<CourseBasic> coursesForUser = buConnectorController.getCoursesForUser(username);
         logger.info("courses for user (" + username +")");
         for (Course course : coursesForUser){
             logger.info(course.toString());
@@ -116,19 +108,19 @@ class BuConnectorApp {
 
 
 
-         List<Course> coursesForUserInRole = buConnectorController.getCoursesForUserInRole(username, courseMembershipRoleName);
+         List<CourseBasic> coursesForUserInRole = buConnectorController.getCoursesForUserInRole(username, courseMembershipRoleName);
          logger.info("courses for user (" + username +") in role (" + courseMembershipRoleName +")");
         for (Course course : coursesForUserInRole){
             logger.info(course.toString());
         }
-
+*/
 
         List<CourseMembership> courseMemberships = buConnectorController.getCourseMembership(username, courseId);
         logger.info("Course membership for user (" + username +") and course id (" + courseId +")");
         for (CourseMembership courseMembership : courseMemberships){
             logger.info(courseMembership.toString());
         }
-
+/*
         List<Column> columns = buConnectorController.getCourseColumns(courseId);
         logger.info("Course columns for course id (" + courseId +")");
         for (Column column : columns){
@@ -141,13 +133,14 @@ class BuConnectorApp {
 //        logger.info(column);
 
 
-
+*/
         List<Column> columns = buConnectorController.getCourseColumnsByColumnName(courseId, columnName);
         logger.info("Column for course course id (" + courseId +") and column name (" + columnName + ")");
         for (Column column : columns){
             logger.info(column.toString());
         }
 
+/*
         List<Score> courseTotalScores = buConnectorController.getCourseTotalScore(courseId);
         logger.info("Score for course id (" + courseId +")");
         for (Score score : courseTotalScores){
@@ -161,7 +154,7 @@ class BuConnectorApp {
         for (Score score : courseScoresByColumn){
             logger.info(score.toString());
         }
-*/
+
 
         Date submissionDate = null;
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -169,7 +162,7 @@ class BuConnectorApp {
         cal.add(Calendar.DATE, -365);
         submissionDate = cal.getTime();
 
-/*
+
         String string = "August 09, 2014 22:19:43 ";
         try {
             submissionDate = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.ENGLISH).parse(string);
@@ -187,14 +180,21 @@ class BuConnectorApp {
             logger.info("Total of records retrieved: "+courseScoresByColumnAfterSubmissionDate.size());
 
         }
-*/
+/*
 
-        List<Score> courseScoreByUserAndColumn = buConnectorController.getCourseScoreByUserAndColumn(courseId, username, columnName, submissionDate);
-        logger.info("Score for course id (" + courseId +") for column ("+ columnName +")");
-        for (Score score : courseScoreByUserAndColumn){
+        List<Score> courseScoreByUserAndColumnAfterDate = buConnectorController.getCourseScoreByUserAndColumnAfterDate(courseId, username, columnName, submissionDate);
+        logger.info("Score for user ("+username+") for course (" + courseId +") for column ("+ columnName +")");
+        for (Score score : courseScoreByUserAndColumnAfterDate){
             logger.info(score.toString());
         }
 
+
+        List<Score> courseScoreByUser = buConnectorController.getCourseScoreByUser(courseId, username, submissionDate);
+        logger.info("Score for user ("+username+") for course (" + courseId +")");
+        for (Score score : courseScoreByUser){
+            logger.info(score.toString());
+        }
+*/
 
   //      buConnectorController.getAttempts(courseId);
 

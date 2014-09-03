@@ -1,15 +1,28 @@
 package edu.bu.ist.bbws.buconnector.model;
 
+import edu.bu.ist.bbws._generated.context.ContextWSStub;
 import edu.bu.ist.bbws._generated.course.CourseWSStub;
+import edu.bu.ist.bbws._generated.coursemembership.CourseMembershipWSStub;
+import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
+import edu.bu.ist.bbws._generated.user.UserWSStub;
+import edu.bu.ist.bbws.buconnector.controller.BuConnectorController;
+import edu.bu.ist.bbws.buconnector.service.course.CourseService;
 import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
+import edu.bu.ist.bbws.buconnector.service.coursemembership.CoursemembershipService;
+import edu.bu.ist.bbws.buconnector.service.gradebook.GradebookService;
+import edu.bu.ist.bbws.buconnector.service.user.UserService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mkousheh on 8/25/14.
  */
-public class Course {
+public class CourseDetail {
 
     private String bbId;
     private String courseId;
@@ -23,12 +36,26 @@ public class Course {
     private boolean available;
     private String institutionName;
     private String courseServiceLevel;
-    private Column columns;
+    private List<Column> columns;
+    private List<User> enrolledStudents;
+    private List<User> intructors;
 
-    public Course() {
+    public UserService getUserService() {
+        return userService;
     }
 
-    public Course(CourseWSStub.CourseVO courseV0) {
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    private UserService userService;
+
+
+    public CourseDetail() {
+    }
+
+    public CourseDetail(CourseWSStub.CourseVO courseV0, UserService userService, GradebookService gradebookService, CoursemembershipService coursemembershipService, CourseService courseService) {
+
         this.bbId = courseV0.getId();
         this.courseId = courseV0.getCourseId();
         this.batchUid = courseV0.getBatchUid();
@@ -41,10 +68,47 @@ public class Course {
         this.available = courseV0.getAvailable();
         this.institutionName = courseV0.getInstitutionName();
         this.courseServiceLevel = courseV0.getCourseServiceLevel();
-        this.columns = new Column();
+
+//        this.columns = getBuConnectorController().getCourseColumns(courseV0.getCourseId());
+
+        try {
+            columns = new ArrayList<Column>();
+            GradebookWSStub.ColumnVO[] columnVOs = gradebookService.getCourseColumns(courseV0.getCourseId());
+            for (GradebookWSStub.ColumnVO columnVO:columnVOs){
+                this.columns.add (new Column(columnVO, courseService));
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            enrolledStudents = new ArrayList<User>();
+            intructors = new ArrayList<User>();
+            UserWSStub.UserVO[] userV0s = userService.getCourseUsersByCourseId(courseV0.getCourseId());
+            for (UserWSStub.UserVO userVO:userV0s){
+                List<CourseMembership> courseMemberships= new ArrayList<CourseMembership>();
+                CourseMembershipWSStub.CourseMembershipVO[] courseMembershipVOs = coursemembershipService.getCourseMembership(userVO.getName(), courseV0.getCourseId());
+                for (CourseMembershipWSStub.CourseMembershipVO courseMembershipVO:courseMembershipVOs){
+                    if (courseMembershipVO != null) {
+                        courseMemberships.add(new CourseMembership(courseMembershipVO, courseService, userService, coursemembershipService));
+                        if (coursemembershipService.getCourseMembershipRoleById(courseMembershipVO.getRoleId()).getRoleIdentifier().toString().equalsIgnoreCase("S")) {
+                            this.enrolledStudents.add(new User(userVO));
+                        } else if (coursemembershipService.getCourseMembershipRoleById(courseMembershipVO.getRoleId()).getRoleIdentifier().toString().equalsIgnoreCase("OnCampusInstructor")) {
+                            this.intructors.add(new User(userVO));
+                        }
+                    }
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public Course(String courseBbId) {
+
+    public CourseDetail(String courseBbId) {
+
+
         CourseWSStub.CourseVO courseV0;
         try {
             courseV0 = new CourseServiceImpl().getCourseByBbId(courseBbId);
@@ -55,13 +119,13 @@ public class Course {
                 this.name = courseV0.getName();
                 this.description = courseV0.getDescription();
                 this.enrollmentType = courseV0.getEnrollmentType();
-//                this.startDate = courseV0.getStartDate();
-//                this.endDate = courseV0.getEndDate();
+                this.startDate = new Date(courseV0.getStartDate() * 1000);
+                this.endDate = new Date(courseV0.getEndDate() * 1000);
                 this.duration = courseV0.getCourseDuration();
                 this.available = courseV0.getAvailable();
                 this.institutionName = courseV0.getInstitutionName();
                 this.courseServiceLevel = courseV0.getCourseServiceLevel();
-                this.columns = new Column(courseV0.getCourseId());
+ //               this.columns = getBuConnectorController().getCourseColumns(courseV0.getCourseId());
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -164,13 +228,14 @@ public class Course {
         this.courseServiceLevel = courseServiceLevel;
     }
 
-    public Column getColumns() {
+    public List<Column> getColumns() {
         return columns;
     }
 
-    public void setColumns(Column columns) {
+    public void setColumns(List<Column> columns) {
         this.columns = columns;
     }
+
 
     @Override
     public String toString() {
@@ -181,13 +246,15 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", enrollmentType='" + enrollmentType + '\'' +
-                ", startDate='" + startDate + '\'' +
-                ", endDate='" + endDate + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
                 ", duration='" + duration + '\'' +
                 ", available=" + available +
                 ", institutionName='" + institutionName + '\'' +
                 ", courseServiceLevel='" + courseServiceLevel + '\'' +
-//                ", columns=" + columns.toString() +
+                ", columns=" + columns +
+                ", enrolledStudents=" + enrolledStudents +
+                ", intructors=" + intructors +
                 '}';
     }
 }

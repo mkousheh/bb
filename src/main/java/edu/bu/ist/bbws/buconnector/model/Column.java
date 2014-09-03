@@ -1,7 +1,9 @@
 package edu.bu.ist.bbws.buconnector.model;
 
 import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
+import edu.bu.ist.bbws.buconnector.service.course.CourseService;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 
 /**
@@ -27,9 +29,13 @@ public class Column {
     public Column() {
     }
 
-    public Column(GradebookWSStub.ColumnVO columnVO) {
+    public Column(GradebookWSStub.ColumnVO columnVO, CourseService courseService) {
         this.bbId = columnVO.getId();
-        this.courseId = columnVO.getCourseId();
+        try {
+            this.courseId = courseService.getCourseByBbId(columnVO.getCourseId()).getCourseId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         this.columnName = columnVO.getColumnName();
         this.columnDisplayName = columnVO.getColumnDisplayName();
         this.description = columnVO.getDescription();

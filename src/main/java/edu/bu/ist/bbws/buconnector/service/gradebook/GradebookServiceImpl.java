@@ -5,12 +5,16 @@ import edu.bu.ist.bbws._generated.gradebook.GradebookWSStub;
 import edu.bu.ist.bbws._generated.user.UserWSStub;
 import edu.bu.ist.bbws.buconnector.model.Score;
 import edu.bu.ist.bbws.buconnector.service.context.ContextService;
+import edu.bu.ist.bbws.buconnector.service.context.ContextServiceImpl;
 import edu.bu.ist.bbws.buconnector.service.course.CourseService;
+import edu.bu.ist.bbws.buconnector.service.course.CourseServiceImpl;
 import edu.bu.ist.bbws.buconnector.service.user.UserService;
+import edu.bu.ist.bbws.buconnector.service.user.UserServiceImpl;
 import edu.bu.ist.bbws.buconnector.utils.ConnectorUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -24,11 +28,6 @@ import java.util.List;
  */
 public class GradebookServiceImpl implements GradebookService {
     private static final Logger logger = Logger.getLogger(GradebookServiceImpl.class.getName());
-
-    private ContextService contextService;
-    private CourseService courseService;
-    private UserService userService;
-    private ConnectorUtil connectorUtil;
 
     public static final int GET_SCORE_BY_COURSE_ID = 1;
     public static final int GET_SCORE_BY_COLUMN_ID_AND_USER_ID = 2;
@@ -61,6 +60,14 @@ public class GradebookServiceImpl implements GradebookService {
     public static final int GET_COLUMN_BY_IDS = 3;
     /** For GET_BY_EXTERNAL_GRADE_FLAG, courseId must be populated */
     public static final int GET_COLUMN_BY_EXTERNAL_GRADE_FLAG = 4;
+    @Autowired
+    private ConnectorUtil connectorUtil;
+    @Autowired
+    private ContextServiceImpl contextService;
+    @Autowired
+    private CourseServiceImpl courseService;
+    @Autowired
+    private UserServiceImpl userService;
 
     /**
       * gets gradebook columns for a given course
@@ -246,15 +253,16 @@ public class GradebookServiceImpl implements GradebookService {
         return scoreVOs;
     }
 
+
     /**
      * gets all scores by column for a course
      *
-     * @param courseId   - bb course identifier
-     * @param columnName - bb gradebook column display name
+     * @param courseId - bb course identifier
+     * @param username - bb username name
      * @return list of scores for a given course per given column
      * @throws RemoteException
      */
-    public GradebookWSStub.ScoreVO[] getCourseScoreByUsernameAndColumn(String courseId, String username, String columnName) throws RemoteException {
+    public GradebookWSStub.ScoreVO[] getCourseScoreByUsername(String courseId, String username) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         GradebookWSStub.ScoreVO[] scoreVOs = null;
 
@@ -270,16 +278,11 @@ public class GradebookServiceImpl implements GradebookService {
             userInternalId = user.getId();
         }
 
-        String columnInternalId = null;
-        GradebookWSStub.ColumnVO[] columnVOs = getCourseColumnsByColumnName(courseId, columnName);
-        if (columnVOs != null) {
-            columnInternalId = columnVOs[0].getId();
-        }
-        if (courseInternalId != null && columnInternalId != null) {
+
+        if (courseInternalId != null) {
             try {
                 GradebookWSStub.ScoreFilter scoreFilter = new GradebookWSStub.ScoreFilter();
-                scoreFilter.setFilterType(GET_SCORE_BY_COLUMN_ID_AND_USER_ID);
-                scoreFilter.setColumnId(columnInternalId);
+                scoreFilter.setFilterType(GET_SCORE_BY_USER_ID);
                 scoreFilter.setUserIds(new String[]{userInternalId});
 //            scoreFilter.setMemberIds(new String[]{"_810183_1"});
                 GradebookWSStub.GetGrades grades = new GradebookWSStub.GetGrades();
@@ -338,12 +341,12 @@ public class GradebookServiceImpl implements GradebookService {
      * @return list of scores for given course per column after a given date
      * @throws RemoteException
      */
-    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAndColumn(String courseId, String username, String columnName, Date submissionDate) throws RemoteException {
+    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAndColumnAfterDate(String courseId, String username, String columnName, Date submissionDate) throws RemoteException {
 
         List<GradebookWSStub.ScoreVO> scores= new ArrayList<GradebookWSStub.ScoreVO>();
         long submissionDateLong = submissionDate.getTime();
 
-        GradebookWSStub.ScoreVO[] scoreVOs = getCourseScoreByUsernameAndColumn(courseId, username, columnName);
+        GradebookWSStub.ScoreVO[] scoreVOs = getCourseScoreByUserAndColumn(courseId, username, columnName);
         for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
             if (scoreVO.getLastAttemptId() != null) {
                 GradebookWSStub.AttemptVO lastAttempt = getAttempt(courseId, scoreVO.getLastAttemptId());
@@ -359,9 +362,92 @@ public class GradebookServiceImpl implements GradebookService {
         return scores;
     }
 
+    /**
+     * gets all scores by column for a course
+     *
+     * @param courseId   - bb course identifier
+     * @param columnName - bb gradebook column display name
+     * @return list of scores for a given course per given column
+     * @throws RemoteException
+     */
+    public GradebookWSStub.ScoreVO[] getCourseScoreByUserAndColumn(String courseId, String username, String columnName) throws RemoteException {
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
+        GradebookWSStub.ScoreVO[] scoreVOs = null;
 
+        String courseInternalId = null;
+        CourseWSStub.CourseVO courseVO = getCourseService().getCourseById(courseId);
+        if (courseVO != null) {
+            courseInternalId = courseVO.getId();
+        }
 
-    GradebookWSStub.AttemptVO getAttempt(String courseId, String lastAttemptId) throws RemoteException {
+        String userInternalId = null;
+        UserWSStub.UserVO user = getUserService().getUserByUsername(username);
+        if (user != null) {
+            userInternalId = user.getId();
+        }
+
+        String columnInternalId = null;
+        GradebookWSStub.ColumnVO[] columnVOs = getCourseColumnsByColumnName(courseId, columnName);
+        if (columnVOs != null) {
+            columnInternalId = columnVOs[0].getId();
+        }
+        if (courseInternalId != null && columnInternalId != null) {
+            try {
+                GradebookWSStub.ScoreFilter scoreFilter = new GradebookWSStub.ScoreFilter();
+                scoreFilter.setFilterType(GET_SCORE_BY_COLUMN_ID_AND_USER_ID);
+                scoreFilter.setColumnId(columnInternalId);
+                scoreFilter.setUserIds(new String[]{userInternalId});
+//            scoreFilter.setMemberIds(new String[]{"_810183_1"});
+                GradebookWSStub.GetGrades grades = new GradebookWSStub.GetGrades();
+                grades.setFilter(scoreFilter);
+
+                grades.setCourseId(courseInternalId);
+
+                GradebookWSStub gradebookWSStub = new GradebookWSStub(ctx,
+                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Gradebook.WS");
+                getContextService().client_engage(gradebookWSStub._getServiceClient());
+                GradebookWSStub.GetGradesResponse gradesResponse = gradebookWSStub.getGrades(grades);
+
+                scoreVOs = gradesResponse.get_return();
+            } catch (RemoteException e) {
+                logger.error("There was a problem executing the getCourseMembership method : " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            } finally {
+                ctx.terminate();
+            }
+        }
+        return scoreVOs;
+    }
+
+    /**
+     * @param courseId - bb course identifier
+     * @param username - bb username name
+     * @return list of scores for given course per column after a given date
+     * @throws RemoteException
+     */
+    public List<GradebookWSStub.ScoreVO> getCourseScoreByUserAfterDate(String courseId, String username, Date submissionDate) throws RemoteException {
+
+        List<GradebookWSStub.ScoreVO> scores= new ArrayList<GradebookWSStub.ScoreVO>();
+        long submissionDateLong = submissionDate.getTime();
+
+        GradebookWSStub.ScoreVO[] scoreVOs = getCourseScoreByUsername(courseId, username);
+        for (GradebookWSStub.ScoreVO scoreVO : scoreVOs) {
+            if (scoreVO.getLastAttemptId() != null) {
+                GradebookWSStub.AttemptVO lastAttempt = getAttempt(courseId, scoreVO.getLastAttemptId());
+                if (lastAttempt != null) {
+                    if (lastAttempt.getStatus().equalsIgnoreCase("Completed") ){//&& lastAttempt.getCreationDate()*1000 >= submissionDateLong) {
+                        Date d = new Date(lastAttempt.getAttemptDate()*1000);
+                        logger.info("date: "+d);
+                        scores.add(scoreVO);
+                    }
+                }
+            }
+        }
+        return scores;
+    }
+
+    private  GradebookWSStub.AttemptVO getAttempt(String courseId, String lastAttemptId) throws RemoteException {
         ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(getConnectorUtil().getModulePath());
         GradebookWSStub.AttemptVO[] attemptVOs = null;
         GradebookWSStub.AttemptVO attemptVO = null;
@@ -400,27 +486,27 @@ public class GradebookServiceImpl implements GradebookService {
     }
 
 
-    ContextService getContextService() {
+    ContextServiceImpl getContextService() {
         return contextService;
     }
 
-    public void setContextService(ContextService contextService) {
+    public void setContextService(ContextServiceImpl contextService) {
         this.contextService = contextService;
     }
 
-    CourseService getCourseService() {
+    CourseServiceImpl getCourseService() {
         return courseService;
     }
 
-    public void setCourseService(CourseService courseService) {
+    public void setCourseService(CourseServiceImpl courseService) {
         this.courseService = courseService;
     }
 
-    public UserService getUserService() {
+    public UserServiceImpl getUserService() {
         return userService;
     }
 
-    public void setUserService(UserService userService) {
+    public void setUserService(UserServiceImpl userService) {
         this.userService = userService;
     }
 
