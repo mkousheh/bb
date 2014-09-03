@@ -1,9 +1,8 @@
 package edu.bu.ist.bbws;
 
-import edu.bu.ist.bbws.buconnector.controller.BuConnectorController;
-import edu.bu.ist.bbws.buconnector.model.CourseBasic;
-import edu.bu.ist.bbws.buconnector.model.CourseDetail;
-import edu.bu.ist.bbws.buconnector.model.User;
+import edu.bu.ist.bbws.controller.BuConnectorController;
+import edu.bu.ist.bbws.model.CourseBasic;
+import edu.bu.ist.bbws.model.User;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -22,7 +21,7 @@ public class BbWsConnector {
     private BuConnectorController buConnectorController;
 
     public BbWsConnector() {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext_BuConnector.xml");
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         buConnectorController = (BuConnectorController) ctx.getBean("buConnectorController");
         buConnectorController.login();
     }
@@ -33,6 +32,7 @@ public class BbWsConnector {
         for (String sysRole: user.getSystemRoles()){
             userSysRoles.add(sysRole);
         }
+        buConnectorController.logout();
         return userSysRoles;
     }
 
@@ -42,6 +42,7 @@ public class BbWsConnector {
         for (String sysRole: user.getInsRoles()){
             userInsRoles.add(sysRole);
         }
+        buConnectorController.logout();
         return userInsRoles;
     }
 
@@ -50,6 +51,7 @@ public class BbWsConnector {
         if (course != null){
             return true;
         }
+        buConnectorController.logout();
         return false;
     }
 
@@ -58,6 +60,7 @@ public class BbWsConnector {
         if (course != null){
             return course.getInstitutionName();
         }
+        buConnectorController.logout();
         return null;
     }
 
@@ -72,17 +75,19 @@ public class BbWsConnector {
             crsInfo[i][2] = course.getName();
             i++;
         }
+        buConnectorController.logout();
         return Arrays.asList(crsInfo);
     }
 
     public HashSet<String> getRolesByUserId(String userId){
         HashSet<String> roleSet = null;
 //        roleSet = buConnectorController.getCourseMembershipRoleById();
+        buConnectorController.logout();
         return null;
     }
 
     public void getBlackboardScore(){
-
+        buConnectorController.logout();
     }
 
 }
