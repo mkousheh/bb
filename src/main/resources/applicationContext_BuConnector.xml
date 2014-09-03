@@ -42,6 +42,7 @@
         <property name="contextService" ref="contextService"/>
         <property name="courseService" ref="courseService"/>
         <property name="connectorUtil" ref="connectorUtil"/>
+        <property name="coursemembershipService" ref="coursemembershipService"/>
     </bean>
 
     <bean id="buConnectorController" class="edu.bu.ist.bbws.buconnector.controller.BuConnectorController">

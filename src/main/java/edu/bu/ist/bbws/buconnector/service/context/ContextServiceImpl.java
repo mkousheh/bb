@@ -176,7 +176,7 @@ public class ContextServiceImpl implements ContextService {
         this.ctx = ctx;
     }
 
-    ConnectorUtil getConnectorUtil() {
+    public ConnectorUtil getConnectorUtil() {
         return connectorUtil;
     }
 

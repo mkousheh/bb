@@ -30,7 +30,6 @@ import java.util.List;
 public class BuConnectorController {
     private static final Logger logger = Logger.getLogger(BuConnectorController.class.getName());
 
-
     @Autowired
     private ContextServiceImpl contextService;
     @Autowired
@@ -44,27 +43,6 @@ public class BuConnectorController {
 
 
     private BuConnectorController() {
-    }
-
-
-
-    public void login() {
-        try {
-            boolean loginResult = getContextService().login();
-            logger.info("login:" + loginResult);
-        } catch (RemoteException e) {
-            logger.error("There was an error when trying to get login to the Blackboard web service" + e.getMessage());
-        }
-
-    }
-    public void logout() {
-        try {
-            boolean loginResult = getContextService().logout();
-            logger.info("logout: " + loginResult);
-        } catch (RemoteException e) {
-            logger.error("There was an error when trying to get login to the Blackboard web service" + e.getMessage());
-        }
-
     }
 
     /**
@@ -219,6 +197,47 @@ public class BuConnectorController {
     }
 
     /**
+     * gets all users for a given course id
+     *
+     * @param courseId - bb course identifier
+     * @return list of users for a course
+     */
+    public List<User> getCourseEnrolledStudents(String courseId) {
+        List<User> users = new ArrayList<User>();
+        try {
+            List<UserWSStub.UserVO> userVOs = getUserService().getCourseEnrolledStudents(courseId.trim());
+            if (userVOs != null){
+                for (UserWSStub.UserVO userVO : userVOs) {
+                    users.add(new User(userVO));
+                }
+            }
+        } catch (RemoteException e) {
+            logger.error("There was an error when trying to execute method getCourseUsersByCourseId for param (" + courseId + ") : " + e.getMessage());
+        }
+        return users;
+    }
+
+    /**
+     * gets all users for a given course id
+     *
+     * @param courseId - bb course identifier
+     * @return list of users for a course
+     */
+    public List<User> getCourseInstructors(String courseId) {
+        List<User> users = new ArrayList<User>();
+        try {
+            List<UserWSStub.UserVO> userVOs = getUserService().getCourseInstructors(courseId.trim());
+            if (userVOs != null){
+                for (UserWSStub.UserVO userVO : userVOs) {
+                    users.add(new User(userVO));
+                }
+            }
+        } catch (RemoteException e) {
+            logger.error("There was an error when trying to execute method getCourseUsersByCourseId for param (" + courseId + ") : " + e.getMessage());
+        }
+        return users;
+    }
+    /**
      * gets a role object per given role name
      *
      * @param courseMembershipRoleName - bb course membership role display name
@@ -313,21 +332,7 @@ public class BuConnectorController {
             CourseMembershipWSStub.CourseMembershipVO[] courseMembershipVOs = getCoursemembershipService().getCourseMembership(username.trim(), courseId.trim());
             if (courseMembershipVOs != null){
                 for (CourseMembershipWSStub.CourseMembershipVO courseMembershipVO : courseMembershipVOs){
-
-/*                    CourseMembership membership = new CourseMembership();
-
-                    membership.setUsername(courseMembershipVO.getUserId());
-//                    membership.setUser(loadUserByKey(courseMembershipVO.getUserId()));
-                    membership.setBbId(courseMembershipVO.getId());
-                    membership.setAvailable(courseMembershipVO.getAvailable());
-                    membership.setEnrollmentDate(new Date(courseMembershipVO.getEnrollmentDate() * 1000));
-                    membership.setCourseId(courseMembershipVO.getCourseId());
-//                    membership.setCourse(loadCourseByKey(courseMembershipVO.getCourseId()));
-                    membership.setCourseMembershipRole(loadCourseMembershipRoleByKey(courseMembershipVO.getRoleId()));
-
-                    courseMemberships.add(membership);*/
-
-                    courseMemberships.add(new CourseMembership(courseMembershipVO, getCourseService(),  getUserService(),  getCoursemembershipService()));
+                   courseMemberships.add(new CourseMembership(courseMembershipVO, getCourseService(),  getUserService(),  getCoursemembershipService()));
 
                 }
             }
@@ -530,6 +535,28 @@ public class BuConnectorController {
     }
 
 
+    public boolean login() {
+        boolean loginResult = false;
+        try {
+            loginResult = getContextService().login();
+            logger.info("login:" + loginResult);
+        } catch (RemoteException e) {
+            logger.error("There was an error when trying to get login to the Blackboard web service" + e.getMessage());
+        }
+        return loginResult;
+    }
+    public boolean logout() {
+        boolean logoutResult = false;
+
+        try {
+            logoutResult = getContextService().logout();
+            logger.info("logout: " + logoutResult);
+        } catch (RemoteException e) {
+            logger.error("There was an error when trying to get login to the Blackboard web service" + e.getMessage());
+        }
+        return logoutResult;
+    }
+
     public ContextServiceImpl getContextService() {
         return contextService;
     }
@@ -570,82 +597,4 @@ public class BuConnectorController {
         this.userService = userService;
     }
 
-
-
-
-
-    User loadUserByKey(String userBbId) {
-        User user = new User();
-        UserWSStub.UserVO userVO;
-        try {
-            userVO = getUserService().getUserByUserBbId(userBbId);
-            if (userVO != null){
-                user.setAvailable(userVO.getIsAvailable());
-                user.setBbLocalId(userVO.getId());
-                user.setEducationLevel(userVO.getEducationLevel());
-                user.setEmailAddress(userVO.getExtendedInfo().getEmailAddress());
-                user.setFamilyName(userVO.getExtendedInfo().getFamilyName());
-                user.setGivenName(userVO.getExtendedInfo().getGivenName());
-                user.setGenderType(userVO.getGenderType());
-                user.setStudentId(userVO.getStudentId());
-                user.setTitle(userVO.getTitle());
-                user.setUserName(userVO.getName());
-                if (userVO.getInsRoles() != null) {
-                    List<String> instRoles = new ArrayList<String>();
-                    Collections.addAll(instRoles, userVO.getInsRoles());
-                    user.setInsRoles(instRoles);
-                }
-                if (userVO.getSystemRoles() != null) {
-                    List<String> systemRoles = new ArrayList<String>();
-                    Collections.addAll(systemRoles, userVO.getSystemRoles());
-                    user.setSystemRoles(systemRoles);
-                }
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    return user;
-    }
-
-CourseDetail loadCourseByKey(String courseBbId){
-    CourseDetail course = new CourseDetail();
-    CourseWSStub.CourseVO courseVO;
-    try {
-    courseVO = getCourseService().getCourseByBbId(courseBbId);
-    if (courseVO != null) {
-        course.setBbId(courseVO.getId());
-        course.setCourseId(courseVO.getCourseId());
-        course.setBatchUid(courseVO.getBatchUid());
-        course.setName(courseVO.getName());
-        course.setDescription(courseVO.getDescription());
-        course.setEnrollmentType(courseVO.getEnrollmentType());
-        course.setDuration(courseVO.getCourseDuration());
-        course.setAvailable(courseVO.getAvailable());
-        course.setInstitutionName(courseVO.getInstitutionName());
-        course.setCourseServiceLevel(courseVO.getCourseServiceLevel());
-    }
-    } catch (RemoteException e) {
-        e.printStackTrace();
-    }
-    return course;
-}
-
-
-
-    CourseMembershipRole loadCourseMembershipRoleByKey(String courseMembershipRoleId){
-        CourseMembershipRole courseMembershipRole = new CourseMembershipRole();
-        CourseMembershipWSStub.CourseMembershipRoleVO courseMembershipRoleVO;
-        try {
-            courseMembershipRoleVO = getCoursemembershipService().getCourseMembershipRoleById(courseMembershipRoleId);
-            if (courseMembershipRoleVO != null) {
-                courseMembershipRole.setBbRoleId(courseMembershipRoleVO.getRoleIdentifier());
-                courseMembershipRole.setCourseRoleDescription(courseMembershipRoleVO.getCourseRoleDescription());
-                courseMembershipRole.setOrgRoleDescription(courseMembershipRoleVO.getOrgRoleDescription());
-                courseMembershipRole.setDefaultRole(courseMembershipRoleVO.getDefaultRole());
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return courseMembershipRole;
-    }
 }

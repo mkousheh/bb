@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.ku.it.si</groupId>
-    <artifactId>blackboardcoursesforuser</artifactId>
+    <artifactId>bb</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>blackboardcoursesforuser</name>
     <description>Application that uses Blackboard Learn 9.1 web services to get the Blackboard courses a user is enrolled in.</description>
     <organization>
@@ -100,6 +100,13 @@
             <artifactId>commons-lang</artifactId>
             <version>${commons-lang.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

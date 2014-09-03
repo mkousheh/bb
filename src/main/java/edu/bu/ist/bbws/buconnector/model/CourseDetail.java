@@ -93,7 +93,7 @@ public class CourseDetail {
                         courseMemberships.add(new CourseMembership(courseMembershipVO, courseService, userService, coursemembershipService));
                         if (coursemembershipService.getCourseMembershipRoleById(courseMembershipVO.getRoleId()).getRoleIdentifier().toString().equalsIgnoreCase("S")) {
                             this.enrolledStudents.add(new User(userVO));
-                        } else if (coursemembershipService.getCourseMembershipRoleById(courseMembershipVO.getRoleId()).getRoleIdentifier().toString().equalsIgnoreCase("OnCampusInstructor")) {
+                        } else if (coursemembershipService.getCourseMembershipRoleById(courseMembershipVO.getRoleId()).getRoleIdentifier().toString().contains("Instructor")) {
                             this.intructors.add(new User(userVO));
                         }
                     }
@@ -136,7 +136,7 @@ public class CourseDetail {
         return bbId;
     }
 
-    public void setBbId(String bbId) {
+    private void setBbId(String bbId) {
         this.bbId = bbId;
     }
 
@@ -144,7 +144,7 @@ public class CourseDetail {
         return courseId;
     }
 
-    public void setCourseId(String courseId) {
+    private void setCourseId(String courseId) {
         this.courseId = courseId;
     }
 
@@ -152,7 +152,7 @@ public class CourseDetail {
         return batchUid;
     }
 
-    public void setBatchUid(String batchUid) {
+    private void setBatchUid(String batchUid) {
         this.batchUid = batchUid;
     }
 
@@ -160,7 +160,7 @@ public class CourseDetail {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -168,7 +168,7 @@ public class CourseDetail {
         return description;
     }
 
-    public void setDescription(String description) {
+    private void setDescription(String description) {
         this.description = description;
     }
 
@@ -176,7 +176,7 @@ public class CourseDetail {
         return enrollmentType;
     }
 
-    public void setEnrollmentType(String enrollmentType) {
+    private void setEnrollmentType(String enrollmentType) {
         this.enrollmentType = enrollmentType;
     }
 
@@ -184,7 +184,7 @@ public class CourseDetail {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    private void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
@@ -192,7 +192,7 @@ public class CourseDetail {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    private void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -200,7 +200,7 @@ public class CourseDetail {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    private void setDuration(String duration) {
         this.duration = duration;
     }
 
@@ -208,7 +208,7 @@ public class CourseDetail {
         return available;
     }
 
-    public void setAvailable(boolean available) {
+    private void setAvailable(boolean available) {
         this.available = available;
     }
 
@@ -216,7 +216,7 @@ public class CourseDetail {
         return institutionName;
     }
 
-    public void setInstitutionName(String institutionName) {
+    private void setInstitutionName(String institutionName) {
         this.institutionName = institutionName;
     }
 
@@ -224,7 +224,7 @@ public class CourseDetail {
         return courseServiceLevel;
     }
 
-    public void setCourseServiceLevel(String courseServiceLevel) {
+    private void setCourseServiceLevel(String courseServiceLevel) {
         this.courseServiceLevel = courseServiceLevel;
     }
 
@@ -232,10 +232,25 @@ public class CourseDetail {
         return columns;
     }
 
-    public void setColumns(List<Column> columns) {
+    private void setColumns(List<Column> columns) {
         this.columns = columns;
     }
 
+    public List<User> getEnrolledStudents() {
+        return enrolledStudents;
+    }
+
+    private void setEnrolledStudents(List<User> enrolledStudents) {
+        this.enrolledStudents = enrolledStudents;
+    }
+
+    public List<User> getIntructors() {
+        return intructors;
+    }
+
+    private void setIntructors(List<User> intructors) {
+        this.intructors = intructors;
+    }
 
     @Override
     public String toString() {

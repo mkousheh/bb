@@ -44,7 +44,7 @@ class BuConnectorApp {
 
         String userId = "U84206596";
 
-        String courseId = "00cwr_orc_labsafety_training"; //00cwr_orc_labsafety_training   14sum2sedme504sb1
+        String courseId = "00cwr_orc_labsafety_training"; //00cwr_orc_labsafety_training   14sum2sedme504sb1 _17929_1
         String username = "mkousheh"; // rafonso rjaeckel kcabbott
 
         String courseMembershipRoleName = "On Campus Instructor"; // STUDENT  On Campus Instructor
@@ -83,6 +83,18 @@ class BuConnectorApp {
             logger.info(user.toString());
         }
 */
+       List<User> enrolledStudents = buConnectorController.getCourseEnrolledStudents(courseId);
+        logger.info("Users for course id: " + courseId);
+        for (User user : enrolledStudents){
+            logger.info(user.toString());
+        }
+
+        List<User> intructors = buConnectorController.getCourseInstructors(courseId);
+        logger.info("Users for course id: " + courseId);
+        for (User user : enrolledStudents){
+            logger.info(user.toString());
+        }
+/*
        User userByUsername = buConnectorController.getUserByUsername(username);
        logger.info("User information for user: " + username);
        logger.info(userByUsername);

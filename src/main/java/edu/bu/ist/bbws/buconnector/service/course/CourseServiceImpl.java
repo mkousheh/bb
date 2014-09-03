@@ -58,10 +58,8 @@ public class CourseServiceImpl implements CourseService {
             CourseWSStub.CourseFilter courseFilter = new CourseWSStub.CourseFilter();
             courseFilter.setFilterType(GET_ALL_COURSES);
             courses.setFilter(courseFilter);
-            CourseWSStub courseWSStub = new CourseWSStub(ctx,
-                    "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+            CourseWSStub courseWSStub = new CourseWSStub(ctx,  "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
             getContextService().client_engage(courseWSStub._getServiceClient());
-
             CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
             courseVOs = getCourseResponse.get_return();
         } catch (RemoteException e) {
@@ -90,7 +88,6 @@ public class CourseServiceImpl implements CourseService {
             courseFilter.setFilterType(GET_COURSE_BY_ID);
             courseFilter.setIds(new String[]{courseBbId});
             getCourse.setFilter(courseFilter);
-
             CourseWSStub courseWSStub = new CourseWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
             getContextService().client_engage(courseWSStub._getServiceClient());
             CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(getCourse);
@@ -132,7 +129,6 @@ public class CourseServiceImpl implements CourseService {
             courseFilter.setSearchDateOperator("LessThan");*/
 
             getCourse.setFilter(courseFilter);
-
             CourseWSStub courseWSStub = new CourseWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
             getContextService().client_engage(courseWSStub._getServiceClient());
             CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(getCourse);
@@ -183,10 +179,8 @@ public class CourseServiceImpl implements CourseService {
             if (courseIdsAsArr.length > 0) {
                 courseFilter.setIds(courseIdsAsArr);
                 courses.setFilter(courseFilter);
-                CourseWSStub courseWSStub = new CourseWSStub(ctx,
-                        "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+                CourseWSStub courseWSStub = new CourseWSStub(ctx, "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
                 getContextService().client_engage(courseWSStub._getServiceClient());
-
                 CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
                 courseVOs = getCourseResponse.get_return();
             }
@@ -200,6 +194,7 @@ public class CourseServiceImpl implements CourseService {
 
         return courseVOs;
     }
+
 
     /**
      * gets all courses for given username and rolename
@@ -258,10 +253,8 @@ public class CourseServiceImpl implements CourseService {
                     courseFilter.setFilterType(GET_COURSE_BY_ID);
                     courseFilter.setIds(fCourseIds);
                     courses.setFilter(courseFilter);
-                    CourseWSStub courseWSStub = new CourseWSStub(ctx,
-                            "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
+                    CourseWSStub courseWSStub = new CourseWSStub(ctx,  "http://" + getConnectorUtil().getBlackboardServerURL() + "/webapps/ws/services/Course.WS");
                     getContextService().client_engage(courseWSStub._getServiceClient());
-
                     CourseWSStub.GetCourseResponse getCourseResponse = courseWSStub.getCourse(courses);
                     courseVOs = getCourseResponse.get_return();
                 }
